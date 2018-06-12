@@ -45,7 +45,9 @@ namespace com.mobius.software.windows.iotbroker.coap
             if (tokenLength < 0 || tokenLength > 8)
                 throw new ArgumentException("Invalid token length:" + tokenLength);
 
-            int codeValue = buf.ReadByte();
+            int codeByte = buf.ReadByte();
+            int codeValue = (codeByte >> 5) * 100;
+            codeValue += codeByte & 0x1F;
             CoapCode code = (CoapCode)codeValue;
             
             int messageID = buf.ReadShort();
@@ -106,10 +108,16 @@ namespace com.mobius.software.windows.iotbroker.coap
             IByteBuffer buf = Unpooled.Buffer();
             byte firstByte = 0;
             firstByte += (byte) (message.Version << 6);
-            firstByte += (byte) (((int)message.CoapType << 4) & 2);
+            firstByte += (byte) ((int)message.CoapType << 4);
             firstByte |= (byte) message.Token.Length;
             buf.WriteByte(firstByte);
-            buf.WriteByte((int)message.CoapCode);
+
+            int coapCode = (int)message.CoapCode;
+            int codeMsb = (coapCode / 100);
+            int codeLsb = (byte)(coapCode % 100);
+            int codeByte = ((codeMsb << 5) + codeLsb);
+
+            buf.WriteByte(codeByte & 0x0FF);
             buf.WriteShort(message.MessageID);
             buf.WriteBytes(message.Token);
 
