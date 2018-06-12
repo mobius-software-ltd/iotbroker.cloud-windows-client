@@ -17,9 +17,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
- 
+
 using com.mobius.software.windows.iotbroker.mqtt;
 using com.mobius.software.windows.iotbroker.mqtt.avps;
+using com.mobius.software.windows.iotbroker.network;
 using com.mobius.software.windows.iotbroker.ui.win7.dal;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 {
     public partial class LoadingForm : Form,ClientListener
     {
-        private MqttClient _client;
+        private NetworkClient _client;
         private Account _account;
         private EntityFrameworkDBInterface _dbInterface;
         public LoadingForm()
@@ -154,11 +155,11 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             }
         }
 
-        public void StateChanged(mqtt.ConnectionState newState)
+        public void StateChanged(network.ConnectionState newState)
         {
             switch (newState)
             {
-                case mqtt.ConnectionState.CHANNEL_ESTABLISHED:
+                case network.ConnectionState.CHANNEL_ESTABLISHED:
                     if (this.InvokeRequired)
                         this.Invoke((MethodInvoker)delegate { this.updateProgressBar(33, "Connecting to server"); });
                     else
@@ -166,7 +167,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 
                     _client.Connect();
                     break;
-                case mqtt.ConnectionState.CHANNEL_FAILED:
+                case network.ConnectionState.CHANNEL_FAILED:
                     if (this.InvokeRequired)
                         this.Invoke((MethodInvoker)delegate { this.updateProgressBar(0, "Channel establishment failed"); });
                     else
@@ -186,7 +187,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
                         LoadingForm_Load(this, null);
 
                     break;
-                case mqtt.ConnectionState.CONNECTION_ESTABLISHED:
+                case network.ConnectionState.CONNECTION_ESTABLISHED:
                     if (this.InvokeRequired)
                         this.Invoke((MethodInvoker)delegate { this.updateProgressBar(100, "Connected succesfully"); });
                     else
@@ -198,11 +199,11 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
                         showMainForm();
 
                     break;
-                case mqtt.ConnectionState.CONNECTION_LOST:
+                case network.ConnectionState.CONNECTION_LOST:
                     MessageBox.Show("Connection closed by server.Server  " + _account.ServerHost + ":" + _account.ServerPort);
                     closeConnection();
                     break;
-                case mqtt.ConnectionState.CONNECTION_FAILED:
+                case network.ConnectionState.CONNECTION_FAILED:
                     MessageBox.Show("Connection to server has failed  " + _account.ServerHost + ":" + _account.ServerPort);
                     closeConnection();
                     break;        

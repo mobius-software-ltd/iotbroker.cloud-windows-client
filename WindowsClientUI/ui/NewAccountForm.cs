@@ -37,6 +37,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
         public NewAccountForm()
         {
             InitializeComponent();
+            cmbProtocol.SelectedIndex = 0;
         }
 
         private void txtWill_Click(object sender, EventArgs e)
@@ -87,16 +88,19 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 
         private void loginButton_Click(object sender, EventArgs e)
         {
-            if (txtUsername.Text.Length == 0)
+            if(cmbProtocol.SelectedIndex==0 || cmbProtocol.SelectedIndex == 3)
             {
-                MessageBox.Show("Please enter username");
-                return;
-            }
+                if (txtUsername.Text.Length == 0)
+                {
+                    MessageBox.Show("Please enter username");
+                    return;
+                }
 
-            if (txtPassword.Text.Length == 0)
-            {
-                MessageBox.Show("Please enter password");
-                return;
+                if (txtPassword.Text.Length == 0)
+                {
+                    MessageBox.Show("Please enter password");
+                    return;
+                }
             }
 
             if (txtClientID.Text.Length == 0)
@@ -131,37 +135,40 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             }
 
             Int32 keepalive = 0;
-            if (txtKeepalive.Text.Length > 0)
+            if (cmbProtocol.SelectedIndex == 0 || cmbProtocol.SelectedIndex == 1)
             {
-                if (!Int32.TryParse(txtKeepalive.Text, out keepalive))
+                if (txtKeepalive.Text.Length > 0)
+                {
+                    if (!Int32.TryParse(txtKeepalive.Text, out keepalive))
+                    {
+                        MessageBox.Show("Keepalive has invalid value");
+                        return;
+                    }
+                }
+
+                if (keepalive < 0)
                 {
                     MessageBox.Show("Keepalive has invalid value");
                     return;
                 }
-            }
 
-            if (keepalive < 0)
-            {
-                MessageBox.Show("Keepalive has invalid value");
-                return;
-            }
+                if (txtWill.Text.Length > 0 && txtWillTopic.Text.Length == 0)
+                {
+                    MessageBox.Show("Both will and will topic are required");
+                    return;
+                }
 
-            if (txtWill.Text.Length > 0 && txtWillTopic.Text.Length == 0)
-            {
-                MessageBox.Show("Both will and will topic are required");
-                return;
-            }
+                if (txtWill.Text.Length == 0 && txtWillTopic.Text.Length > 0)
+                {
+                    MessageBox.Show("Both will and will topic are required");
+                    return;
+                }
 
-            if (txtWill.Text.Length == 0 && txtWillTopic.Text.Length > 0)
-            {
-                MessageBox.Show("Both will and will topic are required");
-                return;
-            }
-
-            if (txtWill.Text.Length > 0 && cmbQOS.SelectedIndex == -1)
-            {
-                MessageBox.Show("Please choose will QOS");
-                return;
+                if (txtWill.Text.Length > 0 && cmbQOS.SelectedIndex == -1)
+                {
+                    MessageBox.Show("Please choose will QOS");
+                    return;
+                }
             }
 
             Account newAccount = new Account();
@@ -195,6 +202,65 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             mqtt.SaveChanges();
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        private void cmbProtocol_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (cmbProtocol.SelectedIndex)
+            {
+                case 0:
+                    //MQTT
+                    this.pnlUsername.Show();
+                    this.pnlPassword.Show();
+                    
+                    this.pnlSettings.Show();
+                    this.pnlCleanSession.Show();
+                    this.pnlKeepalive.Show();
+                    this.pnlWill.Show();
+                    this.pnlWillTopic.Show();
+                    this.pnlRetain.Show();
+                    this.pnlQOS.Show();
+                    break;
+                case 1:
+                    //MQTT-SN
+                    this.pnlUsername.Hide();
+                    this.pnlPassword.Hide();
+                    
+                    this.pnlSettings.Show();
+                    this.pnlCleanSession.Show();
+                    this.pnlKeepalive.Show();
+                    this.pnlWill.Show();
+                    this.pnlWillTopic.Show();
+                    this.pnlRetain.Show();
+                    this.pnlQOS.Show();
+                    break;
+                case 2:
+                    //COAP
+                    this.pnlUsername.Hide();
+                    this.pnlPassword.Hide();
+                    
+                    this.pnlSettings.Hide();
+                    this.pnlCleanSession.Hide();
+                    this.pnlKeepalive.Hide();
+                    this.pnlWill.Hide();
+                    this.pnlWillTopic.Hide();
+                    this.pnlRetain.Hide();
+                    this.pnlQOS.Hide();
+                    break;
+                case 3:
+                    //AMQP
+                    this.pnlUsername.Show();
+                    this.pnlPassword.Show();
+                    
+                    this.pnlSettings.Hide();
+                    this.pnlCleanSession.Hide();
+                    this.pnlKeepalive.Hide();
+                    this.pnlWill.Hide();
+                    this.pnlWillTopic.Hide();
+                    this.pnlRetain.Hide();
+                    this.pnlQOS.Hide();
+                    break;
+            }
         }
     }
 }

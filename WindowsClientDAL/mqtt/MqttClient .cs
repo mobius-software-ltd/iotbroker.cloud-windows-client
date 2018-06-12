@@ -17,12 +17,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
- 
+
 using com.mobius.software.windows.iotbroker.dal;
 using com.mobius.software.windows.iotbroker.mqtt.avps;
 using com.mobius.software.windows.iotbroker.mqtt.headers.api;
 using com.mobius.software.windows.iotbroker.mqtt.headers.impl;
 using com.mobius.software.windows.iotbroker.mqtt.net;
+using com.mobius.software.windows.iotbroker.network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ using System.Threading.Tasks;
 
 namespace com.mobius.software.windows.iotbroker.mqtt
 {
-    public class MqttClient: ConnectionListener,MQDevice
+    public class MqttClient: ConnectionListener<MQMessage>,MQDevice,NetworkClient
     {
         public static String MESSAGETYPE_PARAM = "MESSAGETYPE";
         private Int32 RESEND_PERIOND = 3000;
@@ -72,7 +73,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
             this._listener = listener;
         }
 
-        private void SetState(ConnectionState state)
+        public void SetState(ConnectionState state)
         {
             this._connectionState = state;
             if (this._listener != null)
@@ -218,7 +219,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
         public void ProcessConnack(ConnackCode code, Boolean sessionPresent)
         {
             // CANCEL CONNECT TIMER
-            MessageResendTimer timer = _timers.ConnectTimer;
+            MessageResendTimer<MQMessage> timer = _timers.ConnectTimer;
             _timers.StopConnectTimer();
 
             // CHECK CODE , IF OK THEN MOVE TO CONNECTED AND NOTIFY NETWORK SESSION

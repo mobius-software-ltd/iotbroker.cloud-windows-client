@@ -17,8 +17,9 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
- 
+
 using com.mobius.software.windows.iotbroker.mqtt.headers.api;
+using com.mobius.software.windows.iotbroker.network;
 using DotNetty.Transport.Channels;
 using System;
 using System.Collections.Generic;
@@ -30,9 +31,9 @@ namespace com.mobius.software.windows.iotbroker.mqtt.net
 {
     public class MQHandler : SimpleChannelInboundHandler<MQMessage>
     {
-        private ConnectionListener listener;
+        private ConnectionListener<MQMessage> listener;
 
-	    public MQHandler(ConnectionListener listener)
+	    public MQHandler(ConnectionListener<MQMessage> listener)
         {
             this.listener = listener;
         }

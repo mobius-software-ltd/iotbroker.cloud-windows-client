@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
- 
+
 using com.mobius.software.windows.iotbroker.mqtt;
 using com.mobius.software.windows.iotbroker.ui.win7.dal;
 using System;
@@ -31,18 +31,19 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using com.mobius.software.windows.iotbroker.mqtt.avps;
 using System.Data.Entity;
+using com.mobius.software.windows.iotbroker.network;
 
 namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 {
     public partial class MainForm : Form,ClientListener
     {
-        private MqttClient _client;
+        private NetworkClient _client;
         private Account _account;
         private EntityFrameworkDBInterface _dbInterface;
         
         public bool UserClosing { get; set; }
 
-        public MainForm(MqttClient client,Account account, EntityFrameworkDBInterface dbInterface)
+        public MainForm(NetworkClient client,Account account, EntityFrameworkDBInterface dbInterface)
         {
             InitializeComponent();
             this._client = client;
@@ -52,11 +53,11 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             UserClosing = true;
         }
 
-        public void StateChanged(mqtt.ConnectionState newState)
+        public void StateChanged(network.ConnectionState newState)
         {
             switch (newState)
             {
-                case mqtt.ConnectionState.CONNECTION_LOST:
+                case network.ConnectionState.CONNECTION_LOST:
                     MessageBox.Show("Connection to server lost");
                     UserClosing = false;
                     _dbInterface.UnmarkAsDefault(_account);

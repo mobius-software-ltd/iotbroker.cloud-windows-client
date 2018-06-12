@@ -17,8 +17,9 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
- 
+
 using com.mobius.software.windows.iotbroker.mqtt.headers.api;
+using com.mobius.software.windows.iotbroker.network;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
@@ -32,7 +33,7 @@ using System.Windows.Forms;
 
 namespace com.mobius.software.windows.iotbroker.mqtt.net
 {
-    public class TCPClient
+    public class TCPClient: NetworkChannel<MQMessage>
     {
         private EndPoint address;
         private Int32 workerThreads;
@@ -74,7 +75,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt.net
             }
         }
 
-        public Boolean Init(ConnectionListener listener)
+        public Boolean Init(ConnectionListener<MQMessage> listener)
         {
             if (channel == null)
             {

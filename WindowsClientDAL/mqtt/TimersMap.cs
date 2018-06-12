@@ -17,11 +17,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
- 
+
 using com.mobius.software.windows.iotbroker.mqtt.avps;
 using com.mobius.software.windows.iotbroker.mqtt.headers.api;
 using com.mobius.software.windows.iotbroker.mqtt.headers.impl;
 using com.mobius.software.windows.iotbroker.mqtt.net;
+using com.mobius.software.windows.iotbroker.network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace com.mobius.software.windows.iotbroker.mqtt
 {
-    public class TimersMap
+    public class TimersMap:TimersMapInterface<MQMessage>
     {
         #region private fields
 
@@ -43,13 +44,13 @@ namespace com.mobius.software.windows.iotbroker.mqtt
         private Int64 _keepalivePeriod;
         private MqttClient _client;
 
-        private Dictionary<Int32,MessageResendTimer> _timersMap = new Dictionary<Int32,MessageResendTimer>();
+        private Dictionary<Int32,MessageResendTimer<MQMessage>> _timersMap = new Dictionary<Int32,MessageResendTimer<MQMessage>>();
         private Int32 _packetIDCounter = MIN_VALUE;
 
-        private MessageResendTimer _pingTimer;
-        private MessageResendTimer _connectTimer;
+        private MessageResendTimer<MQMessage> _pingTimer;
+        private MessageResendTimer<MQMessage> _connectTimer;
 
-        private void ExecuteTimer(MessageResendTimer timer)
+        private void ExecuteTimer(MessageResendTimer<MQMessage> timer)
         {
 
         }
@@ -71,7 +72,11 @@ namespace com.mobius.software.windows.iotbroker.mqtt
         #region public fields
         public void Store(MQMessage message)
         {
-            MessageResendTimer timer = new MessageResendTimer(message,_listener, this);
+            Boolean isConnect = false;
+            if (message.GetMessageType() == MessageType.CONNECT)
+                isConnect = true;
+
+            MessageResendTimer<MQMessage> timer = new MessageResendTimer<MQMessage>(message,_listener, this, isConnect);
             Boolean added = false;
             if (!((CountableMessage)message).PacketID.HasValue)
             {
@@ -102,12 +107,16 @@ namespace com.mobius.software.windows.iotbroker.mqtt
 
         public void Store(Int32 packetID,MQMessage message)
         {
-            MessageResendTimer timer = new MessageResendTimer(message, _listener, this);
+            Boolean isConnect = false;
+            if (message.GetMessageType() == MessageType.CONNECT)
+                isConnect = true;
+
+            MessageResendTimer<MQMessage> timer = new MessageResendTimer<MQMessage>(message, _listener, this, isConnect);
             _timersMap.Add(packetID,timer);
             timer.Execute(_resendPeriod);
         }
 
-        public void RefreshTimer(MessageResendTimer timer)
+        public void RefreshTimer(MessageResendTimer<MQMessage> timer)
         {
             switch (timer.Message.GetMessageType())
             {
@@ -122,7 +131,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
 
         public MQMessage Remove(Int32 packetID)
         {
-            MessageResendTimer timer=_timersMap[packetID];
+            MessageResendTimer<MQMessage> timer =_timersMap[packetID];
             _timersMap.Remove(packetID);
             if (timer != null)
             {
@@ -141,14 +150,14 @@ namespace com.mobius.software.windows.iotbroker.mqtt
             if (_pingTimer != null)
                 _pingTimer.Stop();
 
-            KeyValuePair<Int32, MessageResendTimer>[] list = _timersMap.ToArray();
+            KeyValuePair<Int32, MessageResendTimer<MQMessage>>[] list = _timersMap.ToArray();
             for (int i = 0; i < list.Length; i++)
                 list[i].Value.Stop();
 
             _timersMap.Clear();
         }
 
-        public MessageResendTimer ConnectTimer
+        public MessageResendTimer<MQMessage> ConnectTimer
         {
             get
             {
@@ -161,7 +170,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
             if (_connectTimer != null)
                 _connectTimer.Stop();
 
-            _connectTimer = new MessageResendTimer(message,_listener, this);
+            _connectTimer = new MessageResendTimer<MQMessage>(message,_listener, this,true);
             _connectTimer.Execute(_resendPeriod);
         }
 
@@ -185,7 +194,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
             if (_pingTimer != null)
                 _pingTimer.Stop();
 
-            _pingTimer = new MessageResendTimer(new Pingreq(),_listener, this);
+            _pingTimer = new MessageResendTimer<MQMessage>(new Pingreq(),_listener, this, false);
             _pingTimer.Execute(_keepalivePeriod);
         }
         #endregion

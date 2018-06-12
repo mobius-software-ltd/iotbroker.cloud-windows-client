@@ -99,9 +99,13 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.txtUsername = new System.Windows.Forms.TextBox();
             this.lblUsername = new System.Windows.Forms.Label();
             this.imageUsername = new System.Windows.Forms.PictureBox();
+            this.pnlProtocol = new System.Windows.Forms.Panel();
+            this.lblProtocol = new System.Windows.Forms.Label();
+            this.imageProtocol = new System.Windows.Forms.PictureBox();
             this.pnlCredentialsHeader = new System.Windows.Forms.Panel();
             this.lblCredentials = new System.Windows.Forms.Label();
             this.cmbQOS = new com.mobius.software.windows.iotbroker.ui.win7.ui.controls.FlatCombo();
+            this.cmbProtocol = new com.mobius.software.windows.iotbroker.ui.win7.ui.controls.FlatCombo();
             this.mainLayout.SuspendLayout();
             this.pnlQOS.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageQOS)).BeginInit();
@@ -126,6 +130,8 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             ((System.ComponentModel.ISupportInitialize)(this.imagePassword)).BeginInit();
             this.pnlUsername.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageUsername)).BeginInit();
+            this.pnlProtocol.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imageProtocol)).BeginInit();
             this.pnlCredentialsHeader.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -134,19 +140,20 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.mainLayout.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.mainLayout.ColumnCount = 1;
             this.mainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.mainLayout.Controls.Add(this.loginButton, 0, 13);
-            this.mainLayout.Controls.Add(this.pnlQOS, 0, 12);
-            this.mainLayout.Controls.Add(this.pnlRetain, 0, 11);
-            this.mainLayout.Controls.Add(this.pnlWillTopic, 0, 10);
-            this.mainLayout.Controls.Add(this.pnlWill, 0, 9);
-            this.mainLayout.Controls.Add(this.pnlKeepalive, 0, 8);
-            this.mainLayout.Controls.Add(this.pnlCleanSession, 0, 7);
-            this.mainLayout.Controls.Add(this.pnlSettings, 0, 6);
-            this.mainLayout.Controls.Add(this.pnlServerPort, 0, 5);
-            this.mainLayout.Controls.Add(this.pnlServerHost, 0, 4);
-            this.mainLayout.Controls.Add(this.pnlClientID, 0, 3);
-            this.mainLayout.Controls.Add(this.pnlPassword, 0, 2);
-            this.mainLayout.Controls.Add(this.pnlUsername, 0, 1);
+            this.mainLayout.Controls.Add(this.loginButton, 0, 14);
+            this.mainLayout.Controls.Add(this.pnlQOS, 0, 13);
+            this.mainLayout.Controls.Add(this.pnlRetain, 0, 12);
+            this.mainLayout.Controls.Add(this.pnlWillTopic, 0, 11);
+            this.mainLayout.Controls.Add(this.pnlWill, 0, 10);
+            this.mainLayout.Controls.Add(this.pnlKeepalive, 0, 9);
+            this.mainLayout.Controls.Add(this.pnlCleanSession, 0, 8);
+            this.mainLayout.Controls.Add(this.pnlSettings, 0, 7);
+            this.mainLayout.Controls.Add(this.pnlPassword, 0, 6);
+            this.mainLayout.Controls.Add(this.pnlUsername, 0, 5);
+            this.mainLayout.Controls.Add(this.pnlClientID, 0, 4);
+            this.mainLayout.Controls.Add(this.pnlServerPort, 0, 3);
+            this.mainLayout.Controls.Add(this.pnlServerHost, 0, 2);
+            this.mainLayout.Controls.Add(this.pnlProtocol, 0, 1);
             this.mainLayout.Controls.Add(this.pnlCredentialsHeader, 0, 0);
             this.mainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainLayout.Location = new System.Drawing.Point(0, 0);
@@ -158,15 +165,16 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.mainLayout.Size = new System.Drawing.Size(284, 422);
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.mainLayout.Size = new System.Drawing.Size(284, 451);
             this.mainLayout.TabIndex = 0;
             // 
             // loginButton
@@ -178,10 +186,10 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.loginButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.loginButton.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.loginButton.ForeColor = System.Drawing.Color.White;
-            this.loginButton.Location = new System.Drawing.Point(1, 384);
+            this.loginButton.Location = new System.Drawing.Point(1, 415);
             this.loginButton.Margin = new System.Windows.Forms.Padding(0);
             this.loginButton.Name = "loginButton";
-            this.loginButton.Size = new System.Drawing.Size(282, 37);
+            this.loginButton.Size = new System.Drawing.Size(282, 35);
             this.loginButton.TabIndex = 12;
             this.loginButton.Text = "Login";
             this.loginButton.UseVisualStyleBackColor = false;
@@ -193,7 +201,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlQOS.Controls.Add(this.lblQOS);
             this.pnlQOS.Controls.Add(this.imageQOS);
             this.pnlQOS.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlQOS.Location = new System.Drawing.Point(2, 354);
+            this.pnlQOS.Location = new System.Drawing.Point(2, 385);
             this.pnlQOS.Margin = new System.Windows.Forms.Padding(1);
             this.pnlQOS.Name = "pnlQOS";
             this.pnlQOS.Size = new System.Drawing.Size(280, 28);
@@ -225,7 +233,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlRetain.Controls.Add(this.lblRetain);
             this.pnlRetain.Controls.Add(this.imageRetain);
             this.pnlRetain.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlRetain.Location = new System.Drawing.Point(2, 323);
+            this.pnlRetain.Location = new System.Drawing.Point(2, 354);
             this.pnlRetain.Margin = new System.Windows.Forms.Padding(1);
             this.pnlRetain.Name = "pnlRetain";
             this.pnlRetain.Size = new System.Drawing.Size(280, 28);
@@ -267,7 +275,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlWillTopic.Controls.Add(this.lblWillTopic);
             this.pnlWillTopic.Controls.Add(this.imageWillTopic);
             this.pnlWillTopic.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlWillTopic.Location = new System.Drawing.Point(2, 292);
+            this.pnlWillTopic.Location = new System.Drawing.Point(2, 323);
             this.pnlWillTopic.Margin = new System.Windows.Forms.Padding(1);
             this.pnlWillTopic.Name = "pnlWillTopic";
             this.pnlWillTopic.Size = new System.Drawing.Size(280, 28);
@@ -307,7 +315,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlWill.Controls.Add(this.lblWill);
             this.pnlWill.Controls.Add(this.imageWill);
             this.pnlWill.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlWill.Location = new System.Drawing.Point(2, 261);
+            this.pnlWill.Location = new System.Drawing.Point(2, 292);
             this.pnlWill.Margin = new System.Windows.Forms.Padding(1);
             this.pnlWill.Name = "pnlWill";
             this.pnlWill.Size = new System.Drawing.Size(280, 28);
@@ -349,7 +357,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlKeepalive.Controls.Add(this.lblKeepalive);
             this.pnlKeepalive.Controls.Add(this.imageKeepalive);
             this.pnlKeepalive.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlKeepalive.Location = new System.Drawing.Point(2, 230);
+            this.pnlKeepalive.Location = new System.Drawing.Point(2, 261);
             this.pnlKeepalive.Margin = new System.Windows.Forms.Padding(1);
             this.pnlKeepalive.Name = "pnlKeepalive";
             this.pnlKeepalive.Size = new System.Drawing.Size(280, 28);
@@ -389,7 +397,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlCleanSession.Controls.Add(this.lblCleanSession);
             this.pnlCleanSession.Controls.Add(this.cleanSessionImage);
             this.pnlCleanSession.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlCleanSession.Location = new System.Drawing.Point(2, 199);
+            this.pnlCleanSession.Location = new System.Drawing.Point(2, 230);
             this.pnlCleanSession.Margin = new System.Windows.Forms.Padding(1);
             this.pnlCleanSession.Name = "pnlCleanSession";
             this.pnlCleanSession.Size = new System.Drawing.Size(280, 28);
@@ -430,7 +438,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(215)))), ((int)(((byte)(219)))));
             this.pnlSettings.Controls.Add(this.lblSettings);
             this.pnlSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlSettings.Location = new System.Drawing.Point(1, 177);
+            this.pnlSettings.Location = new System.Drawing.Point(1, 208);
             this.pnlSettings.Margin = new System.Windows.Forms.Padding(0);
             this.pnlSettings.Name = "pnlSettings";
             this.pnlSettings.Size = new System.Drawing.Size(282, 20);
@@ -453,7 +461,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlServerPort.Controls.Add(this.lblServerPort);
             this.pnlServerPort.Controls.Add(this.imageServerPort);
             this.pnlServerPort.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlServerPort.Location = new System.Drawing.Point(2, 147);
+            this.pnlServerPort.Location = new System.Drawing.Point(2, 178);
             this.pnlServerPort.Margin = new System.Windows.Forms.Padding(1);
             this.pnlServerPort.Name = "pnlServerPort";
             this.pnlServerPort.Size = new System.Drawing.Size(280, 28);
@@ -493,7 +501,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlServerHost.Controls.Add(this.lblServerHost);
             this.pnlServerHost.Controls.Add(this.imageServerHost);
             this.pnlServerHost.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlServerHost.Location = new System.Drawing.Point(2, 116);
+            this.pnlServerHost.Location = new System.Drawing.Point(2, 147);
             this.pnlServerHost.Margin = new System.Windows.Forms.Padding(1);
             this.pnlServerHost.Name = "pnlServerHost";
             this.pnlServerHost.Size = new System.Drawing.Size(280, 28);
@@ -533,7 +541,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlClientID.Controls.Add(this.lblClientID);
             this.pnlClientID.Controls.Add(this.imageClientID);
             this.pnlClientID.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlClientID.Location = new System.Drawing.Point(2, 85);
+            this.pnlClientID.Location = new System.Drawing.Point(2, 116);
             this.pnlClientID.Margin = new System.Windows.Forms.Padding(1);
             this.pnlClientID.Name = "pnlClientID";
             this.pnlClientID.Size = new System.Drawing.Size(280, 28);
@@ -573,7 +581,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlPassword.Controls.Add(this.lblPassword);
             this.pnlPassword.Controls.Add(this.imagePassword);
             this.pnlPassword.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlPassword.Location = new System.Drawing.Point(2, 54);
+            this.pnlPassword.Location = new System.Drawing.Point(2, 85);
             this.pnlPassword.Margin = new System.Windows.Forms.Padding(1);
             this.pnlPassword.Name = "pnlPassword";
             this.pnlPassword.Size = new System.Drawing.Size(280, 28);
@@ -614,7 +622,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlUsername.Controls.Add(this.lblUsername);
             this.pnlUsername.Controls.Add(this.imageUsername);
             this.pnlUsername.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlUsername.Location = new System.Drawing.Point(2, 23);
+            this.pnlUsername.Location = new System.Drawing.Point(2, 54);
             this.pnlUsername.Margin = new System.Windows.Forms.Padding(1);
             this.pnlUsername.Name = "pnlUsername";
             this.pnlUsername.Size = new System.Drawing.Size(280, 28);
@@ -647,6 +655,38 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.imageUsername.Size = new System.Drawing.Size(24, 25);
             this.imageUsername.TabIndex = 0;
             this.imageUsername.TabStop = false;
+            // 
+            // pnlProtocol
+            // 
+            this.pnlProtocol.Controls.Add(this.cmbProtocol);
+            this.pnlProtocol.Controls.Add(this.lblProtocol);
+            this.pnlProtocol.Controls.Add(this.imageProtocol);
+            this.pnlProtocol.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlProtocol.Location = new System.Drawing.Point(2, 23);
+            this.pnlProtocol.Margin = new System.Windows.Forms.Padding(1);
+            this.pnlProtocol.Name = "pnlProtocol";
+            this.pnlProtocol.Size = new System.Drawing.Size(280, 28);
+            this.pnlProtocol.TabIndex = 40;
+            // 
+            // lblProtocol
+            // 
+            this.lblProtocol.AutoSize = true;
+            this.lblProtocol.Location = new System.Drawing.Point(30, 7);
+            this.lblProtocol.Margin = new System.Windows.Forms.Padding(3);
+            this.lblProtocol.Name = "lblProtocol";
+            this.lblProtocol.Size = new System.Drawing.Size(49, 13);
+            this.lblProtocol.TabIndex = 21;
+            this.lblProtocol.Text = "Protocol:";
+            // 
+            // imageProtocol
+            // 
+            this.imageProtocol.Image = global::com.mobius.software.windows.iotbroker.ui.win7.Properties.Resources.icon_will_small;
+            this.imageProtocol.Location = new System.Drawing.Point(5, 0);
+            this.imageProtocol.Margin = new System.Windows.Forms.Padding(1);
+            this.imageProtocol.Name = "imageProtocol";
+            this.imageProtocol.Size = new System.Drawing.Size(24, 25);
+            this.imageProtocol.TabIndex = 0;
+            this.imageProtocol.TabStop = false;
             // 
             // pnlCredentialsHeader
             // 
@@ -685,12 +725,29 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.cmbQOS.Size = new System.Drawing.Size(150, 21);
             this.cmbQOS.TabIndex = 11;
             // 
+            // cmbProtocol
+            // 
+            this.cmbProtocol.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbProtocol.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmbProtocol.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.cmbProtocol.FormattingEnabled = true;
+            this.cmbProtocol.Items.AddRange(new object[] {
+            "MQTT",
+            "MQTT-SN",
+            "COAP",
+            "AMQP"});
+            this.cmbProtocol.Location = new System.Drawing.Point(120, 4);
+            this.cmbProtocol.Name = "cmbProtocol";
+            this.cmbProtocol.Size = new System.Drawing.Size(150, 21);
+            this.cmbProtocol.TabIndex = 22;
+            this.cmbProtocol.SelectedIndexChanged += new System.EventHandler(this.cmbProtocol_SelectedIndexChanged);
+            // 
             // NewAccountForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(284, 422);
+            this.ClientSize = new System.Drawing.Size(284, 451);
             this.Controls.Add(this.mainLayout);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -735,6 +792,9 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.pnlUsername.ResumeLayout(false);
             this.pnlUsername.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageUsername)).EndInit();
+            this.pnlProtocol.ResumeLayout(false);
+            this.pnlProtocol.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imageProtocol)).EndInit();
             this.pnlCredentialsHeader.ResumeLayout(false);
             this.pnlCredentialsHeader.PerformLayout();
             this.ResumeLayout(false);
@@ -798,5 +858,9 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
         private System.Windows.Forms.Label lblWill;
         private System.Windows.Forms.PictureBox imageWill;
         private System.Windows.Forms.Button loginButton;
+        private System.Windows.Forms.Panel pnlProtocol;
+        private System.Windows.Forms.Label lblProtocol;
+        private System.Windows.Forms.PictureBox imageProtocol;
+        private FlatCombo cmbProtocol;
     }
 }
