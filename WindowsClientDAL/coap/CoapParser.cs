@@ -122,7 +122,8 @@ namespace com.mobius.software.windows.iotbroker.coap
             buf.WriteBytes(message.Token);
 
             Int32 previousDelta = 0;
-            foreach (CoapOption option in message.Options)
+            List<CoapOption> sortedOptions = message.Options.OrderBy(o => o.Number).ToList();
+            foreach (CoapOption option in sortedOptions)
             {
                 int delta = option.Number - previousDelta;
                 int realDelta = delta;
