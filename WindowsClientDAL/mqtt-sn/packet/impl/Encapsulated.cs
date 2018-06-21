@@ -69,6 +69,10 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.packet.impl
             int length = 3;
             if (_wirelessNodeID != null)
                 length += _wirelessNodeID.Length;
+
+            if (_message != null)
+                length += _message.getLength();
+
             return length;
         }
 
