@@ -146,7 +146,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
                     }
                 }
 
-                if (keepalive < 0)
+                if (keepalive <= 0)
                 {
                     MessageBox.Show("Keepalive has invalid value");
                     return;
