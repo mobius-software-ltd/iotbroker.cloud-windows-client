@@ -132,7 +132,7 @@ namespace com.mobius.software.windows.iotbroker.coap.net
         public void Send(CoapMessage message)
         {
             if (channel != null && channel.Open)
-                channel.WriteAndFlushAsync(message);
+                channel.WriteAndFlushAsync(new DefaultAddressedEnvelope<CoapMessage>(message, address));
         }
     }
 }

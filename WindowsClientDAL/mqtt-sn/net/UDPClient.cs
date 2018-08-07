@@ -134,7 +134,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
         public void Send(SNMessage message)
         {
             if (channel != null && channel.Open)
-                channel.WriteAndFlushAsync(message);
+                channel.WriteAndFlushAsync(new DefaultAddressedEnvelope<SNMessage>(message,address));
         }
     }
 }
