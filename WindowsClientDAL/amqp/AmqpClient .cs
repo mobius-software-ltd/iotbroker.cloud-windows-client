@@ -337,7 +337,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
             {
                 _channel = channel;
                 AMQPOpen open = new AMQPOpen();
-                open.ContainerId = Guid.NewGuid().ToString();
+                open.ContainerId = _clientID;
                 open.Channel = _channel;
                 _client.Send(open);
             }
