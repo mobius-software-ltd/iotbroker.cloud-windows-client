@@ -50,9 +50,12 @@ namespace com.mobius.software.windows.iotbroker.mqtt.headers.impl
             device.ProcessPuback(PacketID.Value);
         }
 
-        public MessageType GetMessageType()
+        public MessageType MessageType
         {
-            return MessageType.PUBACK;
+            get
+            {
+                return MessageType.PUBACK;
+            }
         }
 
         #endregion

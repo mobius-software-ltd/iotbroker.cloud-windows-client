@@ -50,9 +50,12 @@ namespace com.mobius.software.windows.iotbroker.mqtt.headers.impl
             device.ProcessPubrec(PacketID.Value);
         }
 
-        public MessageType GetMessageType()
+        public MessageType MessageType
         {
-            return MessageType.PUBREC;
+            get
+            {
+                return MessageType.PUBREC;
+            }            
         }
 
         #endregion

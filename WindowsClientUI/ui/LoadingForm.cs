@@ -1,25 +1,29 @@
-﻿/**
- * Mobius Software LTD
- * Copyright 2015-2017, Mobius Software LTD
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+﻿
 
+using com.mobius.software.windows.iotbroker.amqp;
+using com.mobius.software.windows.iotbroker.coap;
+/**
+* Mobius Software LTD
+* Copyright 2015-2017, Mobius Software LTD
+*
+* This is free software; you can redistribute it and/or modify it
+* under the terms of the GNU Lesser General Public License as
+* published by the Free Software Foundation; either version 2.1 of
+* the License, or (at your option) any later version.
+*
+* This software is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this software; if not, write to the Free
+* Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+* 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+*/
 using com.mobius.software.windows.iotbroker.mqtt;
 using com.mobius.software.windows.iotbroker.mqtt.avps;
+using com.mobius.software.windows.iotbroker.mqtt_sn;
 using com.mobius.software.windows.iotbroker.network;
 using com.mobius.software.windows.iotbroker.ui.win7.dal;
 using System;
@@ -86,13 +90,30 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 
         private void initConnect()
         {
-            EndPoint endp = new DnsEndPoint(_account.ServerHost, _account.ServerPort);
+            DnsEndPoint endp = new DnsEndPoint(_account.ServerHost, _account.ServerPort);
             Will will = null;
             if (_account.Will != null && _account.Will.Length>0)
                 will = new Will(new mqtt.avps.Topic(_account.WillTopic, _account.QOS), _account.Will, _account.IsRetain);
 
             _dbInterface = new EntityFrameworkDBInterface(_account);
-            _client = new MqttClient(_dbInterface, endp, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive,will,this);
+            switch (_account.Protocol)
+            {
+                case iotbroker.dal.Protocols.AMQP_PROTOCOL:
+                    _client = new AmqpClient(_dbInterface, endp, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, this);
+                    break;
+                case iotbroker.dal.Protocols.COAP_PROTOCOL:
+                    _client = new CoapClient(_dbInterface, endp, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, this);
+                    break;
+                case iotbroker.dal.Protocols.MQTT_PROTOCOL:
+                    _client = new MqttClient(_dbInterface, endp, false, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, this);
+                    break;
+                case iotbroker.dal.Protocols.MQTT_SN_PROTOCOL:
+                    _client = new SNClient(_dbInterface, endp, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, this);
+                    break;
+                case iotbroker.dal.Protocols.WS_PROTOCOL:
+                    _client = new MqttClient(_dbInterface, endp, true, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, this);
+                    break;
+            }
             
             bool channelCreated =_client.createChannel();
             if (!channelCreated)

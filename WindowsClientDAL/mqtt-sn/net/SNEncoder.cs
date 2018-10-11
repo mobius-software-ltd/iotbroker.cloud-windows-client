@@ -34,12 +34,19 @@ using System.Threading.Tasks;
 
 namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
 {
-    public class SNEncoder : MessageToMessageEncoder<IAddressedEnvelope<SNMessage>>
+    public class SNEncoder : MessageToMessageEncoder<SNMessage>
     {
-        protected override void Encode(IChannelHandlerContext context, IAddressedEnvelope<SNMessage> message, List<object> output)
+        private IChannel _channel;
+
+        public SNEncoder(IChannel channel)
         {
-            IByteBuffer buffer = SNParser.encode(message.Content);
-            output.Add(new DatagramPacket(buffer, message.Sender, message.Recipient));
+            _channel = channel;
+        }
+
+        protected override void Encode(IChannelHandlerContext context, SNMessage message, List<object> output)
+        {
+            IByteBuffer buffer = SNParser.encode(message);
+            output.Add(new DatagramPacket(buffer, _channel.LocalAddress, _channel.RemoteAddress));
         }
     }
 }

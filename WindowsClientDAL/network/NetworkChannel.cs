@@ -12,5 +12,13 @@ namespace com.mobius.software.windows.iotbroker.network
     public interface NetworkChannel<T>
     {
         void Send(T message);
+
+        Boolean Init(ConnectionListener<T> listener);
+
+        Boolean IsConnected();
+
+        void Close();
+
+        void Shutdown();
     }
 }

@@ -82,7 +82,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt.avps
         {
             return _topic.Name.Length + _content.Length + 4;
         }
-
+        
         public Boolean IsValid()
         {
             return this._topic != null && this._topic.Name.Length > 0 && this._content != null;

@@ -40,7 +40,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn
         private Int32 RESEND_PERIOND = 3000;
         private Int32 WORKER_THREADS = 4;
         
-        private EndPoint _address;
+        private DnsEndPoint _address;
         private ConnectionState _connectionState;
 
         private TimersMap _timers;
@@ -58,7 +58,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn
         private Dictionary<String, Int32> reverseMappedTopics = new Dictionary<String, Int32>();
         private List<SNPublish> pendingMessages = new List<SNPublish>();
 
-        public SNClient(DBInterface _interface,EndPoint address, String username,String password, String clientID, Boolean isClean, int keepalive,Will will, ClientListener listener)
+        public SNClient(DBInterface _interface, DnsEndPoint address, String username,String password, String clientID, Boolean isClean, int keepalive,Will will, ClientListener listener)
         {
 
             this._dbInterface = _interface;
@@ -105,7 +105,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn
             return _connectionState;
         }
 
-        public EndPoint GetEndpoint()
+        public DnsEndPoint GetEndpoint()
         {
             return _address;
         }
@@ -424,7 +424,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn
             else
                 reverseMappedTopics.Add(topicName, topicID);
 
-            SNMessage message = new SNPuback(topicID, packetID, ReturnCode.ACCEPTED);
+            SNMessage message = new Regack(topicID, packetID, ReturnCode.ACCEPTED);
             _client.Send(message);
         }
 
@@ -471,6 +471,14 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn
                 case SNQoS.AT_LEAST_ONCE:
                     SNPuback puback = new SNPuback();
                     puback.MessageID = packetID;
+                    puback.ReturnCode = ReturnCode.ACCEPTED;
+                    int topicID = 0;
+                    if (topic is IdentifierTopic)
+					    topicID = ((IdentifierTopic)topic).Value;
+				    else if (topic is ShortTopic)
+					    topicID = Int32.Parse(((ShortTopic)topic).Value);
+
+                    puback.topicID = topicID;
                     _client.Send(puback);
                     realQos = QOS.AT_LEAST_ONCE;
                     break;
@@ -549,7 +557,8 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn
 
         public void ProcessDisconnect()
         {
-            throw new CoreLogicException("received invalid message disconnect");
+            CloseConnection();
+            SetState(ConnectionState.CONNECTION_LOST);
         }
 
         public void ProcessUnsubscribe(Int32 packetID, SNTopic topics)

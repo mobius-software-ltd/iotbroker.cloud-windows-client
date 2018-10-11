@@ -117,8 +117,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
         }
 
         public void RefreshTimer(MessageResendTimer<AMQPHeader> timer)
-        {
-            if(timer.Message is AMQPPing)
+        {            
             switch (timer.Message.Code.Value)
             {
                 case HeaderCodes.PING:

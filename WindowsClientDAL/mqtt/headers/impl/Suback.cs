@@ -58,9 +58,12 @@ namespace com.mobius.software.windows.iotbroker.mqtt.headers.impl
             device.ProcessSuback(PacketID.Value, _returnCodes);
         }
 
-        public MessageType GetMessageType()
+        public MessageType MessageType
         {
-            return MessageType.SUBACK;
+            get
+            {
+                return MessageType.SUBACK;
+            }            
         }
 
         public List<SubackCode> ReturnCodes

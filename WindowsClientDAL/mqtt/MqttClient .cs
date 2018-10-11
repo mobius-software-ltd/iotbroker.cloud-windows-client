@@ -39,11 +39,11 @@ namespace com.mobius.software.windows.iotbroker.mqtt
         private Int32 RESEND_PERIOND = 3000;
         private Int32 WORKER_THREADS = 4;
         
-        private EndPoint _address;
+        private DnsEndPoint _address;
         private ConnectionState _connectionState;
 
         private TimersMap _timers;
-        private TCPClient _client;
+        private NetworkChannel<MQMessage> _client;
         private String _username;
         private String _password;
         private String _clientID;
@@ -52,12 +52,14 @@ namespace com.mobius.software.windows.iotbroker.mqtt
         private Will _will;
         private ClientListener _listener;
         private DBInterface _dbInterface;
+        private Boolean _isWs;
 
-        public MqttClient(DBInterface _interface,EndPoint address, String username,String password, String clientID, Boolean isClean, int keepalive,Will will, ClientListener listener)
+        public MqttClient(DBInterface _interface, DnsEndPoint address, Boolean isWS, String username,String password, String clientID, Boolean isClean, int keepalive,Will will, ClientListener listener)
         {
 
             this._dbInterface = _interface;
             this._address = address;
+            this._isWs = isWS;
             this._username = username;
             this._password = password;
             this._clientID = clientID;
@@ -65,7 +67,10 @@ namespace com.mobius.software.windows.iotbroker.mqtt
             this._keepalive = keepalive;
             this._will = will;
             this._listener = listener;
-            _client = new TCPClient(address, WORKER_THREADS);
+            if(this._isWs)
+                _client = new WSClient(address, WORKER_THREADS);
+            else
+                _client = new TCPClient(address, WORKER_THREADS);
         }
 
         public void SetListener(ClientListener listener)
@@ -100,7 +105,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
             return _connectionState;
         }
 
-        public EndPoint GetEndpoint()
+        public DnsEndPoint GetEndpoint()
         {
             return _address;
         }
@@ -168,7 +173,10 @@ namespace com.mobius.software.windows.iotbroker.mqtt
             if (_client != null)
                 _client.Shutdown();
 
-            _client = new TCPClient(_address, WORKER_THREADS);            
+            if (this._isWs)
+                _client = new WSClient(_address, WORKER_THREADS);
+            else
+                _client = new TCPClient(_address, WORKER_THREADS);            
         }
 
         public void CloseConnection()
@@ -178,7 +186,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
 
             if (_client != null)
             {
-                TCPClient currClient = _client;
+                NetworkChannel<MQMessage> currClient = _client;
                 _client = null;
                 currClient.Shutdown();
             }
@@ -368,7 +376,8 @@ namespace com.mobius.software.windows.iotbroker.mqtt
 
         public void ProcessDisconnect()
         {
-            throw new CoreLogicException("received invalid message disconnect");
+            CloseConnection();
+            SetState(ConnectionState.CONNECTION_LOST);
         }
 
         public void ProcessUnsubscribe(Int32 packetID, String[] topics)

@@ -31,12 +31,19 @@ using System.Threading.Tasks;
 
 namespace com.mobius.software.windows.iotbroker.coap.net
 {
-    public class CoapEncoder : MessageToMessageEncoder<IAddressedEnvelope<CoapMessage>>
+    public class CoapEncoder : MessageToMessageEncoder<CoapMessage>
     {
-        protected override void Encode(IChannelHandlerContext context, IAddressedEnvelope<CoapMessage> message, List<object> output)
+        private IChannel _channel;
+
+        public CoapEncoder(IChannel channel)
         {
-            IByteBuffer buffer = CoapParser.encode(message.Content);
-            output.Add(new DatagramPacket(buffer, message.Sender, message.Recipient));
+            _channel = channel;
+        }
+
+        protected override void Encode(IChannelHandlerContext context, CoapMessage message, List<object> output)
+        {
+            IByteBuffer buffer = CoapParser.encode(message);
+            output.Add(new DatagramPacket(buffer, _channel.LocalAddress, _channel.RemoteAddress));
         }
     }
 }

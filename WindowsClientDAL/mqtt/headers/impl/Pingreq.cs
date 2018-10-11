@@ -42,9 +42,12 @@ namespace com.mobius.software.windows.iotbroker.mqtt.headers.impl
             device.ProcessPingreq();
         }
 
-        public MessageType GetMessageType()
+        public MessageType MessageType
         {
-            return MessageType.PINGREQ;
+            get
+            {
+                return MessageType.PINGREQ;
+            }            
         }
 
         #endregion

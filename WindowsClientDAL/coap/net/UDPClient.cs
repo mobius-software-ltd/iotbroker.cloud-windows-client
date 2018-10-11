@@ -35,7 +35,7 @@ namespace com.mobius.software.windows.iotbroker.coap.net
 {
     public class UDPClient : NetworkChannel<CoapMessage>
     {
-        private EndPoint address;
+        private DnsEndPoint address;
         private Int32 workerThreads;
 
         private Bootstrap bootstrap;
@@ -43,7 +43,7 @@ namespace com.mobius.software.windows.iotbroker.coap.net
         private IChannel channel;
 
         // handlers for client connections
-        public UDPClient(EndPoint address, Int32 workerThreads)
+        public UDPClient(DnsEndPoint address, Int32 workerThreads)
         {
             this.address = address;
             this.workerThreads = workerThreads;
@@ -86,9 +86,8 @@ namespace com.mobius.software.windows.iotbroker.coap.net
                 bootstrap.Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                 {
                     IChannelPipeline pipeline = channel.Pipeline;
-                    pipeline.AddLast(new CoapDecoder());
                     pipeline.AddLast("handler", new CoapHandler(listener));
-                    pipeline.AddLast(new CoapEncoder());
+                    pipeline.AddLast(new CoapEncoder(channel));
                     pipeline.AddLast(new ExceptionHandler());
                 }));
 
@@ -132,7 +131,7 @@ namespace com.mobius.software.windows.iotbroker.coap.net
         public void Send(CoapMessage message)
         {
             if (channel != null && channel.Open)
-                channel.WriteAndFlushAsync(new DefaultAddressedEnvelope<CoapMessage>(message, address));
+                channel.WriteAndFlushAsync(message);
         }
     }
 }

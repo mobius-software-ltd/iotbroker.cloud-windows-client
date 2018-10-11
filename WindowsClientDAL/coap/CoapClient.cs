@@ -40,7 +40,7 @@ namespace com.mobius.software.windows.iotbroker.coap
         private Int32 WORKER_THREADS = 4;
         private Int32 RESEND_PERIOND = 3000;
 
-        private EndPoint _address;
+        private DnsEndPoint _address;
         private ConnectionState _connectionState;
 
         private TimersMap _timers;
@@ -54,7 +54,7 @@ namespace com.mobius.software.windows.iotbroker.coap
         private ClientListener _listener;
         private DBInterface _dbInterface;
 
-        public CoapClient(DBInterface _interface, EndPoint address, String username, String password, String clientID, Boolean isClean, int keepalive, Will will, ClientListener listener)
+        public CoapClient(DBInterface _interface, DnsEndPoint address, String username, String password, String clientID, Boolean isClean, int keepalive, Will will, ClientListener listener)
         {
 
             this._dbInterface = _interface;
@@ -101,7 +101,7 @@ namespace com.mobius.software.windows.iotbroker.coap
             return _connectionState;
         }
 
-        public EndPoint GetEndpoint()
+        public DnsEndPoint GetEndpoint()
         {
             return _address;
         }
@@ -158,25 +158,26 @@ namespace com.mobius.software.windows.iotbroker.coap
             byte[] nodeIdBytes = Encoding.UTF8.GetBytes(_clientID);
             options.Add(new CoapOption((int)CoapOptionType.NODE_ID, nodeIdBytes.Length, nodeIdBytes));
 
-            byte[] qosValue=new byte[1];
+            byte[] qosValue=new byte[2];
+            qosValue[0] = 0x00;
             switch (topic.Qos)
             {
                 case QOS.AT_LEAST_ONCE:
-                    qosValue[0] = 0x00;
+                    qosValue[1] = 0x00;
                     break;
                 case QOS.AT_MOST_ONCE:
-                    qosValue[0] = 0x01;
+                    qosValue[1] = 0x01;
                     break;
                 case QOS.EXACTLY_ONCE:
-                    qosValue[0] = 0x02;
+                    qosValue[1] = 0x02;
                     break;
             }
 
-            options.Add(new CoapOption((int)CoapOptionType.ACCEPT, 1,qosValue));
+            options.Add(new CoapOption((int)CoapOptionType.ACCEPT, 2,qosValue));
             CoapMessage coapMessage = new CoapMessage(VERSION, CoapType.CONFIRMABLE, CoapCode.PUT, 0, null, options, content);
             _timers.Store(coapMessage);
             //set message id = token id
-            coapMessage.MessageID = BitConverter.ToInt32(coapMessage.Token, 0);
+            coapMessage.MessageID = Int32.Parse(Encoding.UTF8.GetString(coapMessage.Token));
             _client.Send(coapMessage);
         }
 
@@ -185,32 +186,33 @@ namespace com.mobius.software.windows.iotbroker.coap
             for (int i = 0; i < topics.Length; i++)
             {
                 List<CoapOption> options = new List<CoapOption>();
-                options.Add(new CoapOption((int)CoapOptionType.OBSERVE, 1, new byte[] { 0x00 }));
+                options.Add(new CoapOption((int)CoapOptionType.OBSERVE, 4, new byte[] { 0x00, 0x00, 0x00, 0x00 }));
 
                 byte[] nameBytes = Encoding.UTF8.GetBytes(topics[i].Name);
                 options.Add(new CoapOption((int)CoapOptionType.URI_PATH, nameBytes.Length, nameBytes));
 
-                byte[] qosValue = new byte[1];
+                byte[] qosValue = new byte[2];
+                qosValue[0] = 0x00;
                 switch (topics[i].Qos)
                 {
                     case QOS.AT_LEAST_ONCE:
-                        qosValue[0] = 0x00;
+                        qosValue[1] = 0x00;
                         break;
                     case QOS.AT_MOST_ONCE:
-                        qosValue[0] = 0x01;
+                        qosValue[1] = 0x01;
                         break;
                     case QOS.EXACTLY_ONCE:
-                        qosValue[0] = 0x02;
+                        qosValue[1] = 0x02;
                         break;
                 }
 
-                options.Add(new CoapOption((int)CoapOptionType.ACCEPT, 1, qosValue));
+                options.Add(new CoapOption((int)CoapOptionType.ACCEPT, 2, qosValue));
                 byte[] nodeIdBytes = Encoding.UTF8.GetBytes(_clientID);
                 options.Add(new CoapOption((int)CoapOptionType.NODE_ID, nodeIdBytes.Length, nodeIdBytes));
                 CoapMessage coapMessage = new CoapMessage(VERSION, CoapType.CONFIRMABLE, CoapCode.GET, 0, null, options, new byte[0]);
                 _timers.Store(coapMessage);
                 //set message id = token id
-                coapMessage.MessageID = BitConverter.ToInt32(coapMessage.Token, 0);
+                coapMessage.MessageID = Int32.Parse(Encoding.UTF8.GetString(coapMessage.Token));
                 _client.Send(coapMessage);
             }
         }
@@ -218,7 +220,7 @@ namespace com.mobius.software.windows.iotbroker.coap
         public void Unsubscribe(string[] topics)
         {
             List<CoapOption> options = new List<CoapOption>();
-            options.Add(new CoapOption((int)CoapOptionType.OBSERVE, 1, new byte[] { 0x01 }));
+            options.Add(new CoapOption((int)CoapOptionType.OBSERVE, 4, new byte[] { 0x00, 0x00, 0x00, 0x01 }));
             for (int i = 0; i < topics.Length; i++)
             {
                 byte[] nameBytes = Encoding.UTF8.GetBytes(topics[i]);
@@ -230,7 +232,7 @@ namespace com.mobius.software.windows.iotbroker.coap
             CoapMessage coapMessage = new CoapMessage(VERSION, CoapType.CONFIRMABLE, CoapCode.GET, 0, null, options, new byte[0]);
             _timers.Store(coapMessage);
             //set message id = token id
-            coapMessage.MessageID = BitConverter.ToInt32(coapMessage.Token, 0);
+            coapMessage.MessageID = Int32.Parse(Encoding.UTF8.GetString(coapMessage.Token));
             _client.Send(coapMessage);
         }
 
@@ -272,7 +274,7 @@ namespace com.mobius.software.windows.iotbroker.coap
                         byte[] nodeIdBytes = Encoding.UTF8.GetBytes(_clientID);
                         message.Options.Add(new CoapOption((int)CoapOptionType.NODE_ID, nodeIdBytes.Length, nodeIdBytes));
                         CoapMessage ack = new CoapMessage(message.Version, CoapType.ACKNOWLEDGEMENT, message.CoapCode, message.MessageID, message.Token, message.Options, new byte[0]);
-                        _client.Send(message);
+                        _client.Send(ack);
                     }
                     break;
                 case CoapType.NON_CONFIRMABLE:
@@ -285,17 +287,20 @@ namespace com.mobius.software.windows.iotbroker.coap
                         if (message.CoapCode == CoapCode.GET)
                         {
                             Boolean? observe = null;
+                            QOS qos = QOS.AT_MOST_ONCE;
                             foreach (CoapOption option in message.Options)
                             {
                                 if (option.Number == (int)CoapOptionType.OBSERVE && option.Value.Length>0)
                                 {
-                                    if (option.Value[0] == 0x00)
+                                    if (option.Value[option.Value.Length-1] == 0x00)
                                         observe = false;
                                     else
                                         observe = true;
 
                                     break;
-                                }                                    
+                                }
+                                else if (option.Number == (int)CoapOptionType.ACCEPT)
+                                    qos = (QOS)option.Value[option.Value.Length - 1];
                             }
 
                             if (observe.HasValue)
@@ -313,7 +318,7 @@ namespace com.mobius.software.windows.iotbroker.coap
                                         }
 
                                         for (int i = 0; i < topics.Count; i++)
-                                            _dbInterface.StoreTopic(topics[i], QOS.AT_LEAST_ONCE);
+                                            _dbInterface.StoreTopic(topics[i], qos);
 
                                         if (_listener != null)
                                             _listener.MessageReceived(MessageType.SUBACK);

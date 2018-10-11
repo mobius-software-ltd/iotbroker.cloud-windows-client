@@ -40,7 +40,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt.headers.impl
         #region constructors
 
         public Connack()
-        {
+        {            
         }
 
         public Connack(Boolean sessionPresent, ConnackCode returnCode)
@@ -63,9 +63,12 @@ namespace com.mobius.software.windows.iotbroker.mqtt.headers.impl
             device.ProcessConnack(_returnCode, _sessionPresent);
         }
 
-        public MessageType GetMessageType()
+        public MessageType MessageType
         {
-            return MessageType.CONNACK;
+            get
+            {
+                return MessageType.CONNACK;
+            }
         }
 
         public Boolean SessionPresent

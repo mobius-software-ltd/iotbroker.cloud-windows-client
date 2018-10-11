@@ -17,8 +17,9 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
- 
+
 using com.mobius.software.windows.iotbroker.mqtt.avps;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,10 +29,14 @@ using System.Threading.Tasks;
 namespace com.mobius.software.windows.iotbroker.mqtt.headers.api
 {
     public interface MQMessage
-    {        
+    {
         Int32 GetLength();
 
-        MessageType GetMessageType();
+        [JsonProperty(PropertyName = MQJsonParser.JSON_MESSAGE_TYPE_PROPERTY_NAME)]
+        MessageType MessageType
+        {
+            get;
+        }
 
         void ProcessBy(MQDevice device);        
     }

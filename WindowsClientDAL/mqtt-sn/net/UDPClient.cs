@@ -37,7 +37,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
 {
     public class UDPClient : NetworkChannel<SNMessage>
     {
-        private EndPoint address;
+        private DnsEndPoint address;
         private Int32 workerThreads;
 
         private Bootstrap bootstrap;
@@ -45,7 +45,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
         private IChannel channel;
 
         // handlers for client connections
-        public UDPClient(EndPoint address, Int32 workerThreads)
+        public UDPClient(DnsEndPoint address, Int32 workerThreads)
         {
             this.address = address;
             this.workerThreads = workerThreads;
@@ -85,15 +85,14 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
                 loopGroup = new MultithreadEventLoopGroup(workerThreads);
                 bootstrap.Group(loopGroup);
                 bootstrap.Channel<SocketDatagramChannel>();
-                bootstrap.Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
+                bootstrap.Handler(new ActionChannelInitializer<SocketDatagramChannel>(channel =>
                 {
                     IChannelPipeline pipeline = channel.Pipeline;
-                    pipeline.AddLast(new SNDecoder());
                     pipeline.AddLast("handler", new SNHandler(listener));
-                    pipeline.AddLast(new SNEncoder());
+                    pipeline.AddLast(new SNEncoder(channel));
                     pipeline.AddLast(new ExceptionHandler());
                 }));
-
+                
                 bootstrap.RemoteAddress(address);
 
                 try
@@ -106,7 +105,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
                             channel = task.Result;
                         }
                         catch (Exception)
-                        {
+                        {                            
                             listener.ConnectFailed();
                             return;
                         }
@@ -134,7 +133,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
         public void Send(SNMessage message)
         {
             if (channel != null && channel.Open)
-                channel.WriteAndFlushAsync(new DefaultAddressedEnvelope<SNMessage>(message,address));
+                channel.WriteAndFlushAsync(message);
         }
     }
 }

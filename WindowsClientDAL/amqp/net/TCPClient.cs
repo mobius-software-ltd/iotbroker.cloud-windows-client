@@ -37,7 +37,7 @@ namespace com.mobius.software.windows.iotbroker.amqp.net
 {
     public class TCPClient: NetworkChannel<AMQPHeader>
     {
-        private EndPoint address;
+        private DnsEndPoint address;
         private Int32 workerThreads;
 
         private Bootstrap bootstrap;
@@ -45,7 +45,7 @@ namespace com.mobius.software.windows.iotbroker.amqp.net
         private IChannel channel;
         
         // handlers for client connections
-        public TCPClient(EndPoint address, Int32 workerThreads)
+        public TCPClient(DnsEndPoint address, Int32 workerThreads)
         {
             this.address = address;
             this.workerThreads = workerThreads;

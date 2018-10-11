@@ -78,9 +78,12 @@ namespace com.mobius.software.windows.iotbroker.mqtt.headers.impl
             device.ProcessConnect(_cleanSession, _keepalive, _will);
         }
 
-        public MessageType GetMessageType()
+        public MessageType MessageType
         {
-            return MessageType.CONNECT;
+            get
+            {
+                return MessageType.CONNECT;
+            }
         }
 
         public Byte ProtocolLevel

@@ -46,7 +46,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
         private Int32 RESEND_PERIOND = 3000;
         private Int32 WORKER_THREADS = 4;
         
-        private EndPoint _address;
+        private DnsEndPoint _address;
         private ConnectionState _connectionState;
 
         private TimersMap _timers;
@@ -68,7 +68,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
         private Dictionary<Int64, String> _usedMappings = new Dictionary<Int64, String>();
         private List<AMQPTransfer> pendingMessages = new List<AMQPTransfer>();
 
-        public AmqpClient(DBInterface _interface,EndPoint address, String username,String password, String clientID, Boolean isClean, int keepalive,Will will, ClientListener listener)
+        public AmqpClient(DBInterface _interface, DnsEndPoint address, String username,String password, String clientID, Boolean isClean, int keepalive,Will will, ClientListener listener)
         {
 
             this._dbInterface = _interface;
@@ -117,7 +117,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
             return _connectionState;
         }
 
-        public EndPoint GetEndpoint()
+        public DnsEndPoint GetEndpoint()
         {
             return _address;
         }
@@ -343,7 +343,9 @@ namespace com.mobius.software.windows.iotbroker.amqp
             }
             else
             {
-                _timers.StopAllTimers();
+                if(_timers!=null)
+                    _timers.StopAllTimers();
+                            
                 _client.Shutdown();
                 SetState(ConnectionState.CONNECTION_FAILED);
             }

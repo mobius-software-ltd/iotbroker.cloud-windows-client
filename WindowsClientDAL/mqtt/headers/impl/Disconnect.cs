@@ -42,9 +42,12 @@ namespace com.mobius.software.windows.iotbroker.mqtt.headers.impl
             device.ProcessDisconnect();
         }
 
-        public MessageType GetMessageType()
+        public MessageType MessageType
         {
-            return MessageType.DISCONNECT;
+            get
+            {
+                return MessageType.DISCONNECT;
+            }
         }
 
         #endregion

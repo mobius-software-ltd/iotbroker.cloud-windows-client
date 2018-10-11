@@ -27,5 +27,5 @@ using System.Threading.Tasks;
 
 namespace com.mobius.software.windows.iotbroker.dal
 {
-    public enum Protocols : Int32 { MQTT_PROTOCOL = 0, MQTT_SN_PROTOCOL = 1, COAP_PROTOCOL = 2, AMQP_PROTOCOL = 3 };
+    public enum Protocols : Int32 { MQTT_PROTOCOL = 0, MQTT_SN_PROTOCOL = 1, COAP_PROTOCOL = 2, AMQP_PROTOCOL = 3, WS_PROTOCOL = 4 };
 }

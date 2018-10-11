@@ -340,7 +340,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
 	    {
             int length = header.GetLength();
             IByteBuffer buf = GetBuffer(length);
-            MessageType type = header.GetMessageType();
+            MessageType type = header.MessageType;
 
             switch (type)
             {

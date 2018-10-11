@@ -81,6 +81,7 @@ namespace com.mobius.software.windows.iotbroker.coap
                 while (!added)
                 {
                     packetID = Interlocked.Increment(ref _packetIDCounter) % MAX_VALUE;
+                    token = Encoding.UTF8.GetBytes(packetID.ToString());
                     try
                     {                        
                         _timersMap.Add(token, timer);
@@ -110,16 +111,10 @@ namespace com.mobius.software.windows.iotbroker.coap
 
         public void RefreshTimer(MessageResendTimer<CoapMessage> timer)
         {
-            Int32 token = BitConverter.ToInt32(timer.Message.Token,0);
-            switch (token)
-            {
-                case 0:
-                    timer.Execute(_keepalivePeriod);                    
-                    break;
-                default:
-                    timer.Execute(_resendPeriod);
-                    break;        
-            }
+            if(timer.Message.Token!=null)
+                timer.Execute(_keepalivePeriod);
+            else
+                timer.Execute(_resendPeriod);                
         }
 
         public CoapMessage Remove(byte[] token)

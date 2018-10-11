@@ -735,7 +735,8 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             "MQTT",
             "MQTT-SN",
             "COAP",
-            "AMQP"});
+            "AMQP",
+            "WS"});
             this.cmbProtocol.Location = new System.Drawing.Point(120, 4);
             this.cmbProtocol.Name = "cmbProtocol";
             this.cmbProtocol.Size = new System.Drawing.Size(150, 21);

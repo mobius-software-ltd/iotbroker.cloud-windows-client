@@ -66,9 +66,12 @@ namespace com.mobius.software.windows.iotbroker.mqtt.headers.impl
             device.ProcessPublish(PacketID, _topic, _content, _retain, _dup);
         }
 
-        public MessageType GetMessageType()
+        public MessageType MessageType
         {
-            return MessageType.PUBLISH;
+            get
+            {
+                return MessageType.PUBLISH;
+            }
         }
 
         public Topic Topic

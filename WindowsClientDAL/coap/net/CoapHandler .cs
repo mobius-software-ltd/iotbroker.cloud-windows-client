@@ -23,6 +23,7 @@ using com.mobius.software.windows.iotbroker.coap.avps;
 using com.mobius.software.windows.iotbroker.mqtt.headers.api;
 using com.mobius.software.windows.iotbroker.network;
 using DotNetty.Transport.Channels;
+using DotNetty.Transport.Channels.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace com.mobius.software.windows.iotbroker.coap.net
 {
-    public class CoapHandler : SimpleChannelInboundHandler<CoapMessage>
+    public class CoapHandler : SimpleChannelInboundHandler<DatagramPacket>
     {
         private ConnectionListener<CoapMessage> listener;
 
@@ -41,10 +42,13 @@ namespace com.mobius.software.windows.iotbroker.coap.net
         }
 
 
-        protected override void ChannelRead0(IChannelHandlerContext ctx, CoapMessage msg)
+        protected override void ChannelRead0(IChannelHandlerContext ctx, DatagramPacket msg)
         {
             if (this.listener != null)
-                this.listener.PacketReceived(msg);            
+            {
+                CoapMessage result = CoapParser.decode(msg.Content);
+                this.listener.PacketReceived(result);
+            }            
         }
 
         override

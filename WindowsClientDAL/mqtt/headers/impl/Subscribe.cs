@@ -61,9 +61,12 @@ namespace com.mobius.software.windows.iotbroker.mqtt.headers.impl
             device.ProcessSubscribe(PacketID.Value,_topics);
         }
 
-        public MessageType GetMessageType()
+        public MessageType MessageType
         {
-            return MessageType.SUBSCRIBE;
+            get
+            {
+                return MessageType.SUBSCRIBE;
+            }            
         }
 
         public Topic[] Topics

@@ -88,7 +88,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 
         private void loginButton_Click(object sender, EventArgs e)
         {
-            if(cmbProtocol.SelectedIndex==0 || cmbProtocol.SelectedIndex == 3)
+            if(cmbProtocol.SelectedIndex==0 || cmbProtocol.SelectedIndex == 3 || cmbProtocol.SelectedIndex == 4)
             {
                 if (txtUsername.Text.Length == 0)
                 {
@@ -135,7 +135,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             }
 
             Int32 keepalive = 0;
-            if (cmbProtocol.SelectedIndex == 0 || cmbProtocol.SelectedIndex == 1)
+            if (cmbProtocol.SelectedIndex == 0 || cmbProtocol.SelectedIndex == 4 || cmbProtocol.SelectedIndex == 1)
             {
                 if (txtKeepalive.Text.Length > 0)
                 {
@@ -182,6 +182,25 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             newAccount.KeepAlive = keepalive;
             newAccount.Will = Encoding.UTF8.GetBytes(txtWill.Text);
             newAccount.WillTopic = txtWillTopic.Text;
+            
+            switch (cmbProtocol.SelectedIndex)
+            {
+                case 0:
+                    newAccount.Protocol = iotbroker.dal.Protocols.MQTT_PROTOCOL;
+                    break;
+                case 1:
+                    newAccount.Protocol = iotbroker.dal.Protocols.MQTT_SN_PROTOCOL;
+                    break;
+                case 2:
+                    newAccount.Protocol = iotbroker.dal.Protocols.COAP_PROTOCOL;
+                    break;
+                case 3:
+                    newAccount.Protocol = iotbroker.dal.Protocols.AMQP_PROTOCOL;
+                    break;
+                case 4:
+                    newAccount.Protocol = iotbroker.dal.Protocols.WS_PROTOCOL;
+                    break;
+            }
 
             switch (cmbQOS.SelectedIndex)
             {

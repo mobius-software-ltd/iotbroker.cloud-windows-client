@@ -20,6 +20,8 @@
 
 using com.mobius.software.windows.iotbroker.mqtt.headers.api;
 using com.mobius.software.windows.iotbroker.network;
+using DotNetty.Codecs.Http;
+using DotNetty.Codecs.Http.WebSockets;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
@@ -33,7 +35,7 @@ using System.Windows.Forms;
 
 namespace com.mobius.software.windows.iotbroker.mqtt.net
 {
-    public class TCPClient: NetworkChannel<MQMessage>
+    public class WSClient: NetworkChannel<MQMessage>
     {
         private DnsEndPoint address;
         private Int32 workerThreads;
@@ -41,9 +43,11 @@ namespace com.mobius.software.windows.iotbroker.mqtt.net
         private Bootstrap bootstrap;
         private MultithreadEventLoopGroup loopGroup;
         private IChannel channel;
-        
+
+        private Queue<MQJsonParser> queue = new Queue<MQJsonParser>();
+
         // handlers for client connections
-        public TCPClient(DnsEndPoint address, Int32 workerThreads)
+        public WSClient(DnsEndPoint address, Int32 workerThreads)
         {
             this.address = address;
             this.workerThreads = workerThreads;
@@ -85,11 +89,15 @@ namespace com.mobius.software.windows.iotbroker.mqtt.net
                 bootstrap.Channel<TcpSocketChannel>();
 			    bootstrap.Option(ChannelOption.TcpNodelay, true);
                 bootstrap.Option(ChannelOption.SoKeepalive, true);
-                
+
+                WebSocketClientHandshaker handshaker = WebSocketClientHandshakerFactory.NewHandshaker(this.getUri(), WebSocketVersion.V13, null, false, EmptyHttpHeaders.Default, 1280000);
+                WebSocketClientHandler handler = new WebSocketClientHandler(this, handshaker, listener);
+
                 bootstrap.Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                 {
                     IChannelPipeline pipeline = channel.Pipeline;
-                    pipeline.AddLast(new MQDecoder());
+                    pipeline.AddLast("http - codec",new HttpClientCodec());
+                    pipeline.AddLast("aggregator", new HttpObjectAggregator(65536));                    
                     pipeline.AddLast("handler", new MQHandler(listener));
                     pipeline.AddLast(new MQEncoder());
                     pipeline.AddLast(new ExceptionHandler());
@@ -135,7 +143,51 @@ namespace com.mobius.software.windows.iotbroker.mqtt.net
 	    public void Send(MQMessage message)
         {
             if (channel != null && channel.Open)
-                channel.WriteAndFlushAsync(message);        
+            {
+                String value = null;
+                MQJsonParser parser = GetParser();
+                try
+                {
+                    value = parser.JsonString(message);
+                }
+                catch (Exception)
+                {
+                    Close();
+                }
+
+                ReleaseParser(parser);
+                if(value!=null)
+                    channel.WriteAndFlushAsync(new TextWebSocketFrame(value));
+            }
+        }
+
+        public MQJsonParser GetParser()
+        {
+            if (queue.Count > 0)
+                return queue.Dequeue();
+
+            return new MQJsonParser();
+        }
+
+        public void ReleaseParser(MQJsonParser parser)
+        {
+            queue.Enqueue(parser);
+        }
+
+        private Uri getUri()
+        {
+            String type = "ws";
+            String url = type + "//:" + this.address.Host + ":" + this.address.Port;
+            Uri uri;
+            try
+            {
+                uri = new Uri(url);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            return uri;
         }
     }
 }
