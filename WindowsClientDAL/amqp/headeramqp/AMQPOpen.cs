@@ -385,7 +385,7 @@ namespace com.mobius.software.windows.iotbroker.amqp.headeramqp
 
         public override void ProcessBy(AMQPDevice device)
         {
-            device.ProcessOpen(IdleTimeout.Value);
+            device.ProcessOpen(IdleTimeout);
         }
 
         #endregion

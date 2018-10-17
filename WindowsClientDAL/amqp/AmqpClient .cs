@@ -212,8 +212,11 @@ namespace com.mobius.software.windows.iotbroker.amqp
         {
             AMQPTransfer transfer = new AMQPTransfer();
             transfer.Channel = _channel;
-            transfer.DeliveryId = 0;
-            transfer.Settled = false;
+            if (topic.Qos == QOS.AT_MOST_ONCE)
+                transfer.Settled = true;
+            else
+                transfer.Settled = false;
+
             transfer.More = false;
             transfer.MessageFormat = new AMQPMessageFormat(0);
 
@@ -234,6 +237,9 @@ namespace com.mobius.software.windows.iotbroker.amqp
                 Int64 handle = _usedOutgoingMappings[topic.Name];
                 transfer.Handle = handle;
                 _timers.Store(transfer);
+                if (transfer.Settled.Value)
+                    _timers.Remove((Int32)transfer.DeliveryId.Value);
+
                 _client.Send(transfer);
             }
             else
@@ -338,22 +344,19 @@ namespace com.mobius.software.windows.iotbroker.amqp
                 _channel = channel;
                 AMQPOpen open = new AMQPOpen();
                 open.ContainerId = _clientID;
+                open.IdleTimeout = _keepalive * 1000;
                 open.Channel = _channel;
                 _client.Send(open);
             }
-            else
-            {
-                if(_timers!=null)
-                    _timers.StopAllTimers();
-                            
-                _client.Shutdown();
-                SetState(ConnectionState.CONNECTION_FAILED);
-            }
         }
 
-        public void ProcessOpen(long idleTimeout)
+        public void ProcessOpen(Int64? idleTimeout)
         {
-            _timers = new TimersMap(this, _client, RESEND_PERIOND, idleTimeout*1000);
+            if(idleTimeout.HasValue)
+                _timers = new TimersMap(this, _client, RESEND_PERIOND, idleTimeout .Value* 1000);
+            else
+                _timers = new TimersMap(this, _client, RESEND_PERIOND, _keepalive * 1000);
+
             _timers.StartPingTimer();
             
             AMQPBegin begin = new AMQPBegin();
@@ -374,11 +377,12 @@ namespace com.mobius.software.windows.iotbroker.amqp
             }            
         }
 
-        public void ProcessAttach(RoleCodes? role,Int64? handle)
+        public void ProcessAttach(String name,RoleCodes? role,Int64? handle)
         {
             if (role.HasValue)
             {
-                if (role.Value == RoleCodes.SENDER)
+                //its reverse here
+                if (role.Value == RoleCodes.RECEIVER)
                 {
                     //publish
                     if (handle.HasValue)
@@ -392,6 +396,9 @@ namespace com.mobius.software.windows.iotbroker.amqp
                                 i--;
 
                                 _timers.Store(currMessage);
+                                if (currMessage.Settled.Value)
+                                    _timers.Remove((Int32)currMessage.DeliveryId.Value);
+
                                 _client.Send(currMessage);
                             }
                         }
@@ -399,7 +406,14 @@ namespace com.mobius.software.windows.iotbroker.amqp
                 }
                 else
                 {
+                    _usedIncomingMappings[name] = handle.Value;
+                    _usedMappings[handle.Value] = name;
+
                     //subscribe
+                    _dbInterface.StoreTopic(name, QOS.AT_LEAST_ONCE);
+
+                    if (_listener != null)
+                        _listener.MessageReceived(MessageType.SUBACK);
                 }
             }
         }
@@ -442,10 +456,15 @@ namespace com.mobius.software.windows.iotbroker.amqp
 
         public void ProcessDisposition(long? first, long? last)
         {
-            if(first.HasValue && last.HasValue)
+            if(first.HasValue)
             {
-                for (Int64 i = first.Value; i < last.Value; i++)
-                    _timers.Remove((Int32)i);                
+                if (last.HasValue)
+                {
+                    for (Int64 i = first.Value; i < last.Value; i++)
+                        _timers.Remove((Int32)i);
+                }                
+                else
+                    _timers.Remove((Int32)first.Value);
             }
         }
 
@@ -457,6 +476,10 @@ namespace com.mobius.software.windows.iotbroker.amqp
                 _usedMappings.Remove(handle.Value);
                 if (_usedOutgoingMappings.ContainsKey(topicName))
                     _usedOutgoingMappings.Remove(topicName);
+
+                _dbInterface.DeleteTopic(topicName);
+                if (_listener != null)
+                    _listener.MessageReceived(MessageType.UNSUBACK);
             }
         }
 

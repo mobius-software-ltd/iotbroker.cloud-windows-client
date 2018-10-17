@@ -13,11 +13,11 @@ namespace com.mobius.software.windows.iotbroker.amqp.headerapi
     {
         void ProcessProto(Int32 channel, Int32 protocolId);
 
-        void ProcessOpen(Int64 idleTimeout);
+        void ProcessOpen(Int64? idleTimeout);
 
         void ProcessBegin();
 
-        void ProcessAttach(RoleCodes? role,Int64? handle);
+        void ProcessAttach(String name,RoleCodes? role,Int64? handle);
 
         void ProcessFlow(Int32 channel);
 

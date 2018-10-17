@@ -298,56 +298,62 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
         }
 
         private void topicsGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
-        {
-            dal.Topic currTopic = ((dal.Topic)topicsGrid.Rows[e.RowIndex].DataBoundItem);
-            switch (currTopic.QOS)
+        {            
+            for(int i=0;i< topicsGrid.Rows.Count;i++)
             {
-                case QOS.AT_MOST_ONCE:
-                    ((DataGridViewImageCell)topicsGrid.Rows[e.RowIndex].Cells[1]).Value= (System.Drawing.Image)Properties.Resources.icon_qos_0;
-                    break;
-                case QOS.AT_LEAST_ONCE:
-                    ((DataGridViewImageCell)topicsGrid.Rows[e.RowIndex].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_qos_1;
-                    break;
-                case QOS.EXACTLY_ONCE:
-                    ((DataGridViewImageCell)topicsGrid.Rows[e.RowIndex].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_qos_2;
-                    break;
+                dal.Topic currTopic = ((dal.Topic)topicsGrid.Rows[i].DataBoundItem);
+                switch (currTopic.QOS)
+                {
+                    case QOS.AT_MOST_ONCE:
+                        ((DataGridViewImageCell)topicsGrid.Rows[i].Cells[1]).Value = Properties.Resources.icon_qos_0;
+                        break;
+                    case QOS.AT_LEAST_ONCE:
+                        ((DataGridViewImageCell)topicsGrid.Rows[i].Cells[1]).Value = Properties.Resources.icon_qos_1;
+                        break;
+                    case QOS.EXACTLY_ONCE:
+                        ((DataGridViewImageCell)topicsGrid.Rows[i].Cells[1]).Value = Properties.Resources.icon_qos_2;
+                        break;
+                }
             }
         }
 
         private void messagesGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {            
-            dal.Message currMessage = ((dal.Message)messagesGrid.Rows[e.RowIndex].DataBoundItem);
-            ((DataGridViewTextBoxCell)messagesGrid.Rows[e.RowIndex].Cells[0]).Value = currMessage.TopicName + Environment.NewLine + Environment.NewLine + Encoding.UTF8.GetString(currMessage.Content);
-            if (currMessage.Incoming)
+            for(int i=0;i< messagesGrid.Rows.Count;i++)
             {
-                switch (currMessage.QOS)
+                dal.Message currMessage = ((dal.Message)messagesGrid.Rows[i].DataBoundItem);
+                ((DataGridViewTextBoxCell)messagesGrid.Rows[i].Cells[0]).Value = currMessage.TopicName + Environment.NewLine + Environment.NewLine + Encoding.UTF8.GetString(currMessage.Content);
+                if (currMessage.Incoming)
                 {
-                    case QOS.AT_MOST_ONCE:
-                        ((DataGridViewImageCell)messagesGrid.Rows[e.RowIndex].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_in_qos_0;
-                        break;
-                    case QOS.AT_LEAST_ONCE:
-                        ((DataGridViewImageCell)messagesGrid.Rows[e.RowIndex].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_in_qos_1;
-                        break;
-                    case QOS.EXACTLY_ONCE:
-                        ((DataGridViewImageCell)messagesGrid.Rows[e.RowIndex].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_in_qos_2;
-                        break;
+                    switch (currMessage.QOS)
+                    {
+                        case QOS.AT_MOST_ONCE:
+                            ((DataGridViewImageCell)messagesGrid.Rows[i].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_in_qos_0;
+                            break;
+                        case QOS.AT_LEAST_ONCE:
+                            ((DataGridViewImageCell)messagesGrid.Rows[i].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_in_qos_1;
+                            break;
+                        case QOS.EXACTLY_ONCE:
+                            ((DataGridViewImageCell)messagesGrid.Rows[i].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_in_qos_2;
+                            break;
+                    }
                 }
-            }
-            else
-            {
-                switch (currMessage.QOS)
+                else
                 {
-                    case QOS.AT_MOST_ONCE:
-                        ((DataGridViewImageCell)messagesGrid.Rows[e.RowIndex].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_out_qos_0;
-                        break;
-                    case QOS.AT_LEAST_ONCE:
-                        ((DataGridViewImageCell)messagesGrid.Rows[e.RowIndex].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_out_qos_1;
-                        break;
-                    case QOS.EXACTLY_ONCE:
-                        ((DataGridViewImageCell)messagesGrid.Rows[e.RowIndex].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_out_qos_2;
-                        break;
+                    switch (currMessage.QOS)
+                    {
+                        case QOS.AT_MOST_ONCE:
+                            ((DataGridViewImageCell)messagesGrid.Rows[i].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_out_qos_0;
+                            break;
+                        case QOS.AT_LEAST_ONCE:
+                            ((DataGridViewImageCell)messagesGrid.Rows[i].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_out_qos_1;
+                            break;
+                        case QOS.EXACTLY_ONCE:
+                            ((DataGridViewImageCell)messagesGrid.Rows[i].Cells[1]).Value = (System.Drawing.Image)Properties.Resources.icon_out_qos_2;
+                            break;
+                    }
                 }
-            }
+            }            
         }
 
         private void messagesGrid_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
@@ -362,20 +368,23 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 
                 if ((e.PaintParts & DataGridViewPaintParts.ContentForeground) != DataGridViewPaintParts.None)
                 {
-                    string text = e.Value.ToString();
-                    int newLinePosition = text.IndexOf(Environment.NewLine);
-                    string textPart1 = text.Substring(0, newLinePosition);
-                    string textPart2 = text.Substring(newLinePosition, text.Length- newLinePosition);
-                    Size fullsize = TextRenderer.MeasureText(text, e.CellStyle.Font);
-                    Size size1 = TextRenderer.MeasureText(textPart1, e.CellStyle.Font);
-                    Size size2 = TextRenderer.MeasureText(textPart2, e.CellStyle.Font);
-                    Rectangle rect1 = new Rectangle(e.CellBounds.Location, e.CellBounds.Size);
-                    using (Brush cellForeBrush = new SolidBrush(e.CellStyle.ForeColor))
-                        e.Graphics.DrawString(textPart1, e.CellStyle.Font, cellForeBrush, rect1);
+                    if(e.Value!=null)
+                    {
+                        string text = e.Value.ToString();
+                        int newLinePosition = text.IndexOf(Environment.NewLine);
+                        string textPart1 = text.Substring(0, newLinePosition);
+                        string textPart2 = text.Substring(newLinePosition, text.Length - newLinePosition);
+                        Size fullsize = TextRenderer.MeasureText(text, e.CellStyle.Font);
+                        Size size1 = TextRenderer.MeasureText(textPart1, e.CellStyle.Font);
+                        Size size2 = TextRenderer.MeasureText(textPart2, e.CellStyle.Font);
+                        Rectangle rect1 = new Rectangle(e.CellBounds.Location, e.CellBounds.Size);
+                        using (Brush cellForeBrush = new SolidBrush(e.CellStyle.ForeColor))
+                            e.Graphics.DrawString(textPart1, e.CellStyle.Font, cellForeBrush, rect1);
 
-                    rect1.Y += size1.Height - 20;
-                    rect1.Height = e.CellBounds.Height;
-                    e.Graphics.DrawString(textPart2, e.CellStyle.Font, new SolidBrush(Color.FromArgb(148,156,161)), rect1);
+                        rect1.Y += size1.Height - 20;
+                        rect1.Height = e.CellBounds.Height;
+                        e.Graphics.DrawString(textPart2, e.CellStyle.Font, new SolidBrush(Color.FromArgb(148, 156, 161)), rect1);
+                    }
                 }
             }
         }

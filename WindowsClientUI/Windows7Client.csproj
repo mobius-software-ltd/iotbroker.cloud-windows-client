@@ -225,10 +225,10 @@
     <Content Include="iotbroker.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\icon_qos_0.png" />
     <None Include="Resources\icon_logout.png" />
     <None Include="Resources\icon_qos_2.png" />
     <None Include="Resources\icon_qos_1.png" />
-    <None Include="Resources\icon_qos_0.png" />
     <None Include="Resources\icon_out_qos_2.png" />
     <None Include="Resources\icon_out_qos_1.png" />
     <None Include="Resources\icon_out_qos_0.png" />

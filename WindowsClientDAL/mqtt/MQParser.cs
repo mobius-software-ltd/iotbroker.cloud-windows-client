@@ -207,7 +207,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
 
                     QOSValue = (fixedHeader & 0x07) >> 1;
                     QOS qos = (QOS)QOSValue;
-                    if (!Enum.IsDefined(typeof(QOS), QOSValue))
+                    if (!Enum.IsDefined(typeof(QOS), (byte)QOSValue))
                         throw new MalformedMessageException("invalid QoS value");
                     if (dup && qos == QOS.AT_MOST_ONCE)
                         throw new MalformedMessageException("PUBLISH, QoS-0 dup flag present");

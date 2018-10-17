@@ -72,7 +72,9 @@ namespace com.mobius.software.windows.iotbroker.mqtt.net
                 MQJsonParser parser = client.GetParser();
                 try
                 {
-                    MQMessage message = parser.Decode(frame.Content.Array);
+                    byte[] content = new byte[frame.Content.ReadableBytes];
+                    frame.Content.ReadBytes(content);
+                    MQMessage message = parser.Decode(content);
                     this.listener.PacketReceived(message);
                 }
                 catch (Exception ex)

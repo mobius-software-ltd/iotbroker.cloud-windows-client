@@ -22,6 +22,7 @@ using com.mobius.software.windows.iotbroker.mqtt.headers.api;
 using com.mobius.software.windows.iotbroker.network;
 using DotNetty.Codecs.Http;
 using DotNetty.Codecs.Http.WebSockets;
+using DotNetty.Codecs.Http.WebSockets.Extensions.Compression;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
@@ -97,9 +98,8 @@ namespace com.mobius.software.windows.iotbroker.mqtt.net
                 {
                     IChannelPipeline pipeline = channel.Pipeline;
                     pipeline.AddLast("http - codec",new HttpClientCodec());
-                    pipeline.AddLast("aggregator", new HttpObjectAggregator(65536));                    
-                    pipeline.AddLast("handler", new MQHandler(listener));
-                    pipeline.AddLast(new MQEncoder());
+                    pipeline.AddLast("aggregator", new HttpObjectAggregator(65536));
+                    pipeline.AddLast("handler", handler);
                     pipeline.AddLast(new ExceptionHandler());
                 }));
 			
@@ -177,7 +177,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt.net
         private Uri getUri()
         {
             String type = "ws";
-            String url = type + "//:" + this.address.Host + ":" + this.address.Port;
+            String url = type + "://" + this.address.Host + ":" + this.address.Port + "/" + type;
             Uri uri;
             try
             {

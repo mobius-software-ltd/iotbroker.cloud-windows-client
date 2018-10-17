@@ -26,6 +26,7 @@ using com.mobius.software.windows.iotbroker.mqtt.utils;
 using DotNetty.Buffers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,20 +39,22 @@ namespace com.mobius.software.windows.iotbroker.mqtt
     public class MQJsonParser
     {
         public const String JSON_MESSAGE_TYPE_PROPERTY_NAME = "packet";
-
+        JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+        
         public MQJsonParser()
         {
+            serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
 
         public byte[] Encode(MQMessage message)
-        {            
-            String json = JsonConvert.SerializeObject(message);
+        {
+            String json = JsonConvert.SerializeObject(message, serializerSettings);
 		    return Encoding.UTF8.GetBytes(json);
         }
 
         public String JsonString(MQMessage message)
         {
-            String json = JsonConvert.SerializeObject(message);
+            String json = JsonConvert.SerializeObject(message, serializerSettings);
             return json;
         }
 
@@ -66,33 +69,33 @@ namespace com.mobius.software.windows.iotbroker.mqtt
                 switch (packet) 
                 {
 			        case MessageType.CONNECT:
-				        return JsonConvert.DeserializeObject<Connect>(json);
+				        return JsonConvert.DeserializeObject<Connect>(json, serializerSettings);
 			        case MessageType.CONNACK:
-                        return JsonConvert.DeserializeObject<Connack>(json);
+                        return JsonConvert.DeserializeObject<Connack>(json, serializerSettings);
                     case MessageType.PUBLISH:
-                        return JsonConvert.DeserializeObject<Publish>(json);
+                        return JsonConvert.DeserializeObject<Publish>(json, serializerSettings);
                     case MessageType.PUBACK:
-                        return JsonConvert.DeserializeObject<Puback>(json);
+                        return JsonConvert.DeserializeObject<Puback>(json, serializerSettings);
                     case MessageType.PUBREC:
-                        return JsonConvert.DeserializeObject<Pubrec>(json);
+                        return JsonConvert.DeserializeObject<Pubrec>(json, serializerSettings);
                     case MessageType.PUBREL:
-                        return JsonConvert.DeserializeObject<Pubrel>(json);
+                        return JsonConvert.DeserializeObject<Pubrel>(json, serializerSettings);
                     case MessageType.PUBCOMP:
-                        return JsonConvert.DeserializeObject<Pubcomp>(json);
+                        return JsonConvert.DeserializeObject<Pubcomp>(json, serializerSettings);
                     case MessageType.SUBSCRIBE:
-                        return JsonConvert.DeserializeObject<Subscribe>(json);
+                        return JsonConvert.DeserializeObject<Subscribe>(json, serializerSettings);
                     case MessageType.SUBACK:
-                        return JsonConvert.DeserializeObject<Suback>(json);
+                        return JsonConvert.DeserializeObject<Suback>(json, serializerSettings);
                     case MessageType.UNSUBSCRIBE:
-                        return JsonConvert.DeserializeObject<Unsubscribe>(json);
+                        return JsonConvert.DeserializeObject<Unsubscribe>(json, serializerSettings);
                     case MessageType.UNSUBACK:
-                        return JsonConvert.DeserializeObject<Unsuback>(json);
+                        return JsonConvert.DeserializeObject<Unsuback>(json, serializerSettings);
                     case MessageType.PINGREQ:
-                        return JsonConvert.DeserializeObject<Pingreq>(json);
+                        return JsonConvert.DeserializeObject<Pingreq>(json, serializerSettings);
                     case MessageType.PINGRESP:
-                        return JsonConvert.DeserializeObject<Pingresp>(json);
+                        return JsonConvert.DeserializeObject<Pingresp>(json, serializerSettings);
                     case MessageType.DISCONNECT:
-                        return JsonConvert.DeserializeObject<Disconnect>(json);
+                        return JsonConvert.DeserializeObject<Disconnect>(json, serializerSettings);
                     default:
 				        throw new MalformedMessageException("Wrong packet type while decoding message from json.");
                 }
