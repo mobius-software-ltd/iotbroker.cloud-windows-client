@@ -19,7 +19,7 @@ namespace com.mobius.software.windows.iotbroker.network
 
         void Connect();
 
-        void Disconnect();
+        Boolean Disconnect();
 
         void Subscribe(Topic[] topics);
 

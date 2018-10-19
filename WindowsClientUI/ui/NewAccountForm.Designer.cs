@@ -145,8 +145,8 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.mainLayout.Controls.Add(this.pnlRetain, 0, 12);
             this.mainLayout.Controls.Add(this.pnlWillTopic, 0, 11);
             this.mainLayout.Controls.Add(this.pnlWill, 0, 10);
-            this.mainLayout.Controls.Add(this.pnlKeepalive, 0, 9);
-            this.mainLayout.Controls.Add(this.pnlCleanSession, 0, 8);
+            this.mainLayout.Controls.Add(this.pnlCleanSession, 0, 9);
+            this.mainLayout.Controls.Add(this.pnlKeepalive, 0, 8);
             this.mainLayout.Controls.Add(this.pnlSettings, 0, 7);
             this.mainLayout.Controls.Add(this.pnlPassword, 0, 6);
             this.mainLayout.Controls.Add(this.pnlUsername, 0, 5);

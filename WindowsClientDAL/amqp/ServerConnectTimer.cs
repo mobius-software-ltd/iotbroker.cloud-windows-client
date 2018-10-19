@@ -36,13 +36,15 @@ namespace com.mobius.software.windows.iotbroker.amqp
 
         private TimersMapInterface<T> _timersMap;
         private Timer _timer;
+        private AmqpClient _client;
 
         #endregion
 
         #region contructors
 
-        public ServerConnectTimer(TimersMapInterface<T> timersMap)
+        public ServerConnectTimer(AmqpClient client, TimersMapInterface<T> timersMap)
         {
+            this._client = client;
             this._timersMap = timersMap;
         }
 
@@ -68,6 +70,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
         public void OnTimedEvent(Object sender,ElapsedEventArgs args)
         {
             _timer = null;
+            _client.CancelConnection();
             _timersMap.CancelConnectTimer();
             return;
         }

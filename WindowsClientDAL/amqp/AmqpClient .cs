@@ -68,9 +68,10 @@ namespace com.mobius.software.windows.iotbroker.amqp
         private Dictionary<Int64, String> _usedMappings = new Dictionary<Int64, String>();
         private List<AMQPTransfer> pendingMessages = new List<AMQPTransfer>();
 
+        private Int64? idleTimeout;
+
         public AmqpClient(DBInterface _interface, DnsEndPoint address, String username,String password, String clientID, Boolean isClean, int keepalive,Will will, ClientListener listener)
         {
-
             this._dbInterface = _interface;
             this._address = address;
             this._username = username;
@@ -81,6 +82,14 @@ namespace com.mobius.software.windows.iotbroker.amqp
             this._will = will;
             this._listener = listener;
             _client = new TCPClient(address, WORKER_THREADS);
+        }
+
+        public Int64 GetKeepalivePeriod()
+        {
+            if (!idleTimeout.HasValue)
+                return _keepalive * 1000L;
+
+            return idleTimeout.Value;
         }
 
         public void SetListener(ClientListener listener)
@@ -101,8 +110,6 @@ namespace com.mobius.software.windows.iotbroker.amqp
             Boolean isSuccess = _client.Init(this);
             if (!isSuccess)
                 SetState(ConnectionState.CHANNEL_FAILED);            
-            else
-                _timers.StoreConnectTimer();
             
             return isSuccess;
         }
@@ -132,29 +139,28 @@ namespace com.mobius.software.windows.iotbroker.amqp
         {
             SetState(ConnectionState.CONNECTING);
 
-            if (_timers != null)
-                _timers.StopAllTimers();
+            _timers = new TimersMap(this, _client, RESEND_PERIOND);
+            _timers.StopAllTimers();
+            _timers.StoreConnectTimer();
 
             AMQPProtoHeader header = new AMQPProtoHeader(3);
             _client.Send(header);
         }
 
-        public void Disconnect()
+        public Boolean Disconnect()
         {
             if (_client.IsConnected())
             {
-                AMQPEnd end = new AMQPEnd();
-                end.Channel = _channel;
-                _client.Send(end);
-
                 if (_timers != null)
                     _timers.StopAllTimers();
 
-                _timers = null;
+                AMQPEnd end = new AMQPEnd();
+                end.Channel = _channel;
+                _timers.Store(-1,end);
+                _client.Send(end);                
             }
 
-            SetState(ConnectionState.NONE);
-            return;
+            return false;
         }
 
         public void Subscribe(Topic[] topics)
@@ -352,13 +358,12 @@ namespace com.mobius.software.windows.iotbroker.amqp
 
         public void ProcessOpen(Int64? idleTimeout)
         {
-            if(idleTimeout.HasValue)
-                _timers = new TimersMap(this, _client, RESEND_PERIOND, idleTimeout .Value* 1000);
-            else
-                _timers = new TimersMap(this, _client, RESEND_PERIOND, _keepalive * 1000);
+            if (idleTimeout.HasValue)
+                this.idleTimeout = idleTimeout;
 
             _timers.StartPingTimer();
-            
+            _timers.CancelConnectTimer();
+
             AMQPBegin begin = new AMQPBegin();
             begin.Channel = _channel;
             begin.NextOutgoingId =0;
@@ -485,13 +490,22 @@ namespace com.mobius.software.windows.iotbroker.amqp
 
         public void ProcessEnd(int channel)
         {
+            if (_timers != null)
+                _timers.Remove(-1);
+
             AMQPClose close = new AMQPClose();
             close.Channel = _channel;
+            _timers.Store(-2, close);
             _client.Send(close);
         }
 
         public void ProcessClose()
         {
+            if (_timers != null)
+                _timers.Remove(-2);
+
+            _timers = null;
+
             if (_client.IsConnected())
                 _client.Close();
             

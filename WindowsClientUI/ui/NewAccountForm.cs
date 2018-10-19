@@ -135,23 +135,23 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             }
 
             Int32 keepalive = 0;
-            if (cmbProtocol.SelectedIndex == 0 || cmbProtocol.SelectedIndex == 4 || cmbProtocol.SelectedIndex == 1)
+            if (txtKeepalive.Text.Length > 0)
             {
-                if (txtKeepalive.Text.Length > 0)
-                {
-                    if (!Int32.TryParse(txtKeepalive.Text, out keepalive))
-                    {
-                        MessageBox.Show("Keepalive has invalid value");
-                        return;
-                    }
-                }
-
-                if (keepalive <= 0)
+                if (!Int32.TryParse(txtKeepalive.Text, out keepalive))
                 {
                     MessageBox.Show("Keepalive has invalid value");
                     return;
                 }
+            }
 
+            if (keepalive <= 0)
+            {
+                MessageBox.Show("Keepalive has invalid value");
+                return;
+            }
+
+            if (cmbProtocol.SelectedIndex == 0 || cmbProtocol.SelectedIndex == 4 || cmbProtocol.SelectedIndex == 1)
+            {
                 if (txtWill.Text.Length > 0 && txtWillTopic.Text.Length == 0)
                 {
                     MessageBox.Show("Both will and will topic are required");
@@ -232,9 +232,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
                     this.pnlUsername.Show();
                     this.pnlPassword.Show();
                     
-                    this.pnlSettings.Show();
                     this.pnlCleanSession.Show();
-                    this.pnlKeepalive.Show();
                     this.pnlWill.Show();
                     this.pnlWillTopic.Show();
                     this.pnlRetain.Show();
@@ -245,9 +243,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
                     this.pnlUsername.Hide();
                     this.pnlPassword.Hide();
                     
-                    this.pnlSettings.Show();
                     this.pnlCleanSession.Show();
-                    this.pnlKeepalive.Show();
                     this.pnlWill.Show();
                     this.pnlWillTopic.Show();
                     this.pnlRetain.Show();
@@ -258,9 +254,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
                     this.pnlUsername.Hide();
                     this.pnlPassword.Hide();
                     
-                    this.pnlSettings.Hide();
                     this.pnlCleanSession.Hide();
-                    this.pnlKeepalive.Hide();
                     this.pnlWill.Hide();
                     this.pnlWillTopic.Hide();
                     this.pnlRetain.Hide();
@@ -271,13 +265,22 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
                     this.pnlUsername.Show();
                     this.pnlPassword.Show();
                     
-                    this.pnlSettings.Hide();
                     this.pnlCleanSession.Hide();
-                    this.pnlKeepalive.Hide();
                     this.pnlWill.Hide();
                     this.pnlWillTopic.Hide();
                     this.pnlRetain.Hide();
                     this.pnlQOS.Hide();
+                    break;
+                case 4:
+                    //MQTT-WS
+                    this.pnlUsername.Show();
+                    this.pnlPassword.Show();
+
+                    this.pnlCleanSession.Show();
+                    this.pnlWill.Show();
+                    this.pnlWillTopic.Show();
+                    this.pnlRetain.Show();
+                    this.pnlQOS.Show();
                     break;
             }
         }

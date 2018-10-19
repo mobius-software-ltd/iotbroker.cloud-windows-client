@@ -131,7 +131,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
                 _client.Send(connect);            
         }
 
-        public void Disconnect()
+        public Boolean Disconnect()
         {
             if (_client.IsConnected())
             {
@@ -140,7 +140,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
             }
 
             SetState(ConnectionState.NONE);
-            return;
+            return true;
         }
 
         public void Subscribe(Topic[] topics)

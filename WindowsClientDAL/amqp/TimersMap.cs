@@ -42,7 +42,6 @@ namespace com.mobius.software.windows.iotbroker.amqp
 
         private TCPClient _listener;
         private Int64 _resendPeriod;
-        private Int64 _keepalivePeriod;
         private AmqpClient _client;
 
         private Dictionary<Int32,MessageResendTimer<AMQPHeader>> _timersMap = new Dictionary<Int32,MessageResendTimer<AMQPHeader>>();
@@ -60,11 +59,10 @@ namespace com.mobius.software.windows.iotbroker.amqp
 
         #region constructors
 
-        public TimersMap(AmqpClient client, TCPClient listener, Int64 resendPeriod,Int64 keepalivePeriod)
+        public TimersMap(AmqpClient client, TCPClient listener, Int64 resendPeriod)
         {
             this._listener = listener;
             this._resendPeriod = resendPeriod;
-            this._keepalivePeriod = keepalivePeriod;
             this._client = client;
         }
 
@@ -121,7 +119,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
             switch (timer.Message.Code.Value)
             {
                 case HeaderCodes.PING:
-                    timer.Execute(_keepalivePeriod);                    
+                    timer.Execute(_client.GetKeepalivePeriod());                    
                     break;
                 default:
                     timer.Execute(_resendPeriod);
@@ -170,7 +168,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
             if (_connectTimer != null)
                 _connectTimer.Stop();
 
-            _connectTimer = new ServerConnectTimer<AMQPHeader>(this);
+            _connectTimer = new ServerConnectTimer<AMQPHeader>(_client,this);
             _connectTimer.Execute(_resendPeriod);
         }
 
@@ -183,10 +181,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
         public void CancelConnectTimer()
         {
             if (_connectTimer != null)
-            { 
-                _connectTimer.Stop();
-                _client.CancelConnection();
-            }
+                _connectTimer.Stop();            
         }
 
         public void StartPingTimer()
@@ -195,7 +190,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
                 _pingTimer.Stop();
 
             _pingTimer = new MessageResendTimer<AMQPHeader>(new AMQPPing(),_listener, this, false);
-            _pingTimer.Execute(_keepalivePeriod);
+            _pingTimer.Execute(_client.GetKeepalivePeriod());
         }
         #endregion
     }

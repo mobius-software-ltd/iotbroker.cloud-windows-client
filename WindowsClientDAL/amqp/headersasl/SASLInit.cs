@@ -123,7 +123,7 @@ namespace com.mobius.software.windows.iotbroker.amqp.headersasl
 
             set
             {
-                if (_mechanism == null)
+                if (value == null)
                     throw new ArgumentException("Mechanism can't be assigned a null value");
 
                 this._mechanism = new AMQPSymbol(value);

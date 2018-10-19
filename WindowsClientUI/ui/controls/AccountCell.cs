@@ -49,7 +49,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui.controls
             {
                 Account account = (Account)value;
                 graphics.DrawImage(com.mobius.software.windows.iotbroker.ui.win7.Properties.Resources.icon_user_name, new PointF(cellBounds.X + 5, cellBounds.Y + 3));
-                graphics.DrawString(account.UserName, titleFont, titleBrush, new PointF(cellBounds.Left + 55, cellBounds.Top + 5));
+                graphics.DrawString(account.Protocol.ToString().Replace("_PROTOCOL",""), titleFont, titleBrush, new PointF(cellBounds.Left + 55, cellBounds.Top + 5));
                 graphics.DrawString(account.ClientID, regularFont, darkGrayBrush, new PointF(cellBounds.Left + 55, cellBounds.Top + 19));
                 graphics.DrawString(account.ServerHost + ":" + account.ServerPort, regularFont, darkGrayBrush, new PointF(cellBounds.Left +55, cellBounds.Top + 33));
                 graphics.DrawLine(pen, new PointF(cellBounds.Left + 5, cellBounds.Bottom - 1), new Point(cellBounds.Right + 25, cellBounds.Bottom - 1));

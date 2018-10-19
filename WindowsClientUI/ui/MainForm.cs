@@ -289,8 +289,9 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
         private void btnLogout_Click(object sender, EventArgs e)
         {
             _client.SetListener(null);
-            _client.Disconnect();
-            _client.CloseConnection();
+            if(_client.Disconnect())
+                _client.CloseConnection();
+
             _client = null;
             UserClosing = false;
             _dbInterface.UnmarkAsDefault(_account);

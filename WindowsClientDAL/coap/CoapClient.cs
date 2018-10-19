@@ -141,13 +141,13 @@ namespace com.mobius.software.windows.iotbroker.coap
 
         }
 
-        public void Disconnect()
+        public Boolean Disconnect()
         {
             if (_client.IsConnected())
                 _client.Close();
             
             SetState(ConnectionState.NONE);
-            return;
+            return true;
         }
 
         public void Publish(Topic topic, byte[] content, bool retain, bool dup)

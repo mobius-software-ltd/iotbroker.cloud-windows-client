@@ -48,17 +48,17 @@ namespace com.mobius.software.windows.iotbroker.amqp.constructors
 
         #region public fields
 
-        public byte[] getBytes()
+        public virtual byte[] getBytes()
         {
             return new byte[] { (byte)Code };
         }
 
-        public int getLength()
+        public virtual int getLength()
         {
             return 1;
         }
 
-        public Byte? getDescriptorCode()
+        public virtual Byte? getDescriptorCode()
         {
             return null;
         }

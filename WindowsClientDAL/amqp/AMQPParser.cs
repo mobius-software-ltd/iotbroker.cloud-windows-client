@@ -64,7 +64,6 @@ namespace com.mobius.software.windows.iotbroker.amqp
 
         public static AMQPHeader Decode(IByteBuffer buf)
         {
-
             long length = buf.ReadInt() & 0xffffffffL;
             int doff = buf.ReadByte() & 0xff;
             int type = buf.ReadByte() & 0xff;

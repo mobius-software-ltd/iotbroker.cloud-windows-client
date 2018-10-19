@@ -49,7 +49,7 @@ namespace com.mobius.software.windows.iotbroker.amqp.constructors
 
         #region public fields
 
-        public new byte[] getBytes()
+        public override byte[] getBytes()
         {
             byte[] descriptorBytes = Descriptor.getBytes();
             byte[] bytes = new byte[descriptorBytes.Length + 2];
@@ -58,13 +58,13 @@ namespace com.mobius.software.windows.iotbroker.amqp.constructors
             bytes[bytes.Length - 1] = (byte)Code;
             return bytes;
         }
-
-        public new int getLength()
+        
+        public override int getLength()
         {
             return Descriptor.getLength() + 2;
         }
 
-        public new Byte? getDescriptorCode()
+        public override Byte? getDescriptorCode()
         {
             return Descriptor.getBytes()[1];
         }
