@@ -51,6 +51,17 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this._dbInterface = dbInterface;
             this._client.SetListener(this);
             UserClosing = true;
+
+            if (this._account.Protocol == iotbroker.dal.Protocols.AMQP_PROTOCOL)
+            {
+                cmbNewTopicQOS.SelectedIndex = 1;
+                cmbNewTopicQOS.Enabled = false;                
+            }                
+            else
+            {
+                cmbNewTopicQOS.Enabled = true;
+                cmbNewTopicQOS.SelectedIndex = -1;
+            }
         }
 
         public void StateChanged(network.ConnectionState newState)
@@ -259,7 +270,10 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 
             mqtt.avps.Topic[] topics = new mqtt.avps.Topic[] { new mqtt.avps.Topic(txtNewTopicName.Text, topicQOS) };
             txtNewTopicName.Text = String.Empty;
-            cmbNewTopicQOS.SelectedIndex = -1;
+
+            if (this._account.Protocol!=iotbroker.dal.Protocols.AMQP_PROTOCOL)
+                cmbNewTopicQOS.SelectedIndex = -1;
+
             MessageBox.Show("Topic Request Sent", "Adding new topic request sent to server", MessageBoxButtons.OK, MessageBoxIcon.Information);
             _client.Subscribe(topics);
         }

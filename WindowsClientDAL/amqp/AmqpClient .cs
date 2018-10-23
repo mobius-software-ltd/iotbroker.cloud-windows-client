@@ -62,7 +62,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
 
         private Boolean _isSASLСonfirm = false;
         private int _channel;
-        private Int64 _nextHandle = 0;
+        private Int64 _nextHandle = 1;
         private Dictionary<String, Int64> _usedIncomingMappings = new Dictionary<String, Int64>();
         private Dictionary<String, Int64> _usedOutgoingMappings = new Dictionary<String, Int64>();
         private Dictionary<Int64, String> _usedMappings = new Dictionary<Int64, String>();
@@ -262,7 +262,8 @@ namespace com.mobius.software.windows.iotbroker.amqp
                 attach.Name = topic.Name;
                 attach.Handle = currentHandler;
                 attach.Role = RoleCodes.SENDER;
-                attach.SndSettleMode = SendCodes.MIXED;
+                attach.RcvSettleMode = ReceiveCodes.FIRST;
+                attach.InitialDeliveryCount = 0L;
                 AMQPSource source = new AMQPSource();
                 source.Address = topic.Name;
                 source.Durable = TerminusDurability.NONE;
@@ -379,7 +380,13 @@ namespace com.mobius.software.windows.iotbroker.amqp
             if (_isClean)
             {
                 clearAccountTopics();
-            }            
+            }
+            else
+            {
+                List<Topic> topics = _dbInterface.GetAllTopics();
+                foreach (Topic curr in topics)
+                    Subscribe(new Topic[] { curr });
+            }
         }
 
         public void ProcessAttach(String name,RoleCodes? role,Int64? handle)
@@ -389,13 +396,16 @@ namespace com.mobius.software.windows.iotbroker.amqp
                 //its reverse here
                 if (role.Value == RoleCodes.RECEIVER)
                 {
+                    Int64 realHandle = _usedOutgoingMappings[name];
+
                     //publish
-                    if (handle.HasValue)
+                    if (_usedOutgoingMappings.ContainsKey(name))
                     {
+
                         for (int i = 0; i < pendingMessages.Count; i++)
                         {
                             AMQPTransfer currMessage = pendingMessages[i];
-                            if (currMessage.Handle == handle.Value)
+                            if (currMessage.Handle == realHandle)
                             {
                                 pendingMessages.RemoveAt(i);
                                 i--;
@@ -413,6 +423,9 @@ namespace com.mobius.software.windows.iotbroker.amqp
                 {
                     _usedIncomingMappings[name] = handle.Value;
                     _usedMappings[handle.Value] = name;
+
+                    if (handle.Value >= _nextHandle)
+                        _nextHandle = handle.Value + 1;
 
                     //subscribe
                     _dbInterface.StoreTopic(name, QOS.AT_LEAST_ONCE);

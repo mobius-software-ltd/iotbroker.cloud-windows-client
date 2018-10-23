@@ -38,5 +38,7 @@ namespace com.mobius.software.windows.iotbroker.dal
         void DeleteAllTopics();
 
         void DeleteTopic(String topicName);
+
+        List<Topic> GetAllTopics();        
     }
 }

@@ -58,6 +58,17 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.dal
             mqtt.SaveChanges();
         }
 
+        public List<mqtt.avps.Topic> GetAllTopics()
+        {
+            MQTTModel mqtt = new MQTTModel();
+            var topics = from t in mqtt.Topics where t.Account.ID == defaultAccount.ID select t;
+            List<mqtt.avps.Topic> result = new List<iotbroker.mqtt.avps.Topic>();
+            foreach (var currTopic in topics)
+                result.Add(new mqtt.avps.Topic(currTopic.TopicName, currTopic.QOS));
+
+            return result;
+        }
+
         public void StoreTopic(string topicName, QOS qos)
         {
             MQTTModel model = new MQTTModel();

@@ -52,7 +52,7 @@ namespace com.mobius.software.windows.iotbroker.amqp.headeramqp
         private Dictionary<AMQPSymbol, Object> _unsettled;
         private Boolean? _incompleteUnsettled;
         private Int64? _initialDeliveryCount;
-        private BigInteger _maxMessageSize;
+        private BigInteger? _maxMessageSize;
         private List<AMQPSymbol> _offeredCapabilities;
         private List<AMQPSymbol> _desiredCapabilities;
         private Dictionary<AMQPSymbol, Object> _properties;
@@ -91,11 +91,11 @@ namespace com.mobius.software.windows.iotbroker.amqp.headeramqp
             else
                 list.addElement(2, AMQPWrapper<AMQPSymbol>.wrap(false));
 
-            if (!_sndSettleMode.HasValue)
-                list.addElement(3, AMQPWrapper<AMQPSymbol>.wrap(_sndSettleMode));
+            if (_sndSettleMode.HasValue)
+                list.addElement(3, AMQPWrapper<AMQPSymbol>.wrap((short)_sndSettleMode.Value));
 
-            if (!_rcvSettleMode.HasValue)
-                list.addElement(4, AMQPWrapper<AMQPSymbol>.wrap(_rcvSettleMode));
+            if (_rcvSettleMode.HasValue)
+                list.addElement(4, AMQPWrapper<AMQPSymbol>.wrap((short)_rcvSettleMode.Value));
 
             if (_source != null)
                 list.addElement(5, _source.getList());
@@ -106,15 +106,15 @@ namespace com.mobius.software.windows.iotbroker.amqp.headeramqp
             if (_unsettled != null)
                 list.addElement(7, AMQPWrapper<AMQPSymbol>.wrapMap(_unsettled));
 
-            if (!_incompleteUnsettled.HasValue)
+            if (_incompleteUnsettled.HasValue)
                 list.addElement(8, AMQPWrapper<AMQPSymbol>.wrap(_incompleteUnsettled));
 
-            if (!_initialDeliveryCount.HasValue)
+            if (_initialDeliveryCount.HasValue)
                 list.addElement(9, AMQPWrapper<AMQPSymbol>.wrap(_initialDeliveryCount));
             else if (_role.Value==RoleCodes.SENDER)
                 throw new MalformedMessageException("Sender's attach header must contain a non-null initial-delivery-count value");
 
-            if (_maxMessageSize != null)
+            if (_maxMessageSize.HasValue)
                 list.addElement(10, AMQPWrapper<AMQPSymbol>.wrap(_maxMessageSize));
 
             if (_offeredCapabilities != null)
@@ -414,7 +414,7 @@ namespace com.mobius.software.windows.iotbroker.amqp.headeramqp
             }
         }
 
-        public BigInteger MaxMessageSize
+        public BigInteger? MaxMessageSize
         {
             get
             {

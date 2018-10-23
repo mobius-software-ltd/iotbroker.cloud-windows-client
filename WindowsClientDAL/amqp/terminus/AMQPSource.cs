@@ -74,7 +74,7 @@ namespace com.mobius.software.windows.iotbroker.amqp.terminus
             if (_address != null)
                 list.addElement(0, AMQPWrapper<AMQPSymbol>.wrap(_address));
             if (_durable != null)
-                list.addElement(1, AMQPWrapper<AMQPSymbol>.wrap((Int32)_durable.Value));
+                list.addElement(1, AMQPWrapper<AMQPSymbol>.wrap((Int64)_durable.Value));
             if (_expiryPeriod != null)
                 list.addElement(2, AMQPWrapper<AMQPSymbol>.wrap(new AMQPSymbol(StringEnum.GetStringValue(_expiryPeriod.Value))));
             if (_timeout != null)

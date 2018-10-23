@@ -68,7 +68,10 @@ namespace com.mobius.software.windows.iotbroker.amqp.headeramqp
             if (_role == null)
                 throw new MalformedMessageException("Disposition header's role can't be null");
 
-            list.addElement(0, AMQPWrapper<AMQPSymbol>.wrap((Int32)_role));
+            if (_role.Value == RoleCodes.RECEIVER)
+                list.addElement(0, AMQPWrapper<AMQPSymbol>.wrap(true));
+            else
+                list.addElement(0, AMQPWrapper<AMQPSymbol>.wrap(false));
 
             if (_first == null)
                 throw new MalformedMessageException("Transfer header's first can't be null");

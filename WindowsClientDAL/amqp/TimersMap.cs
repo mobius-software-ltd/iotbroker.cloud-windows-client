@@ -129,7 +129,10 @@ namespace com.mobius.software.windows.iotbroker.amqp
 
         public AMQPHeader Remove(Int32 packetID)
         {
-            MessageResendTimer<AMQPHeader> timer =_timersMap[packetID];
+            MessageResendTimer<AMQPHeader> timer = null;
+            if(_timersMap.ContainsKey(packetID))
+                timer=_timersMap[packetID];
+
             _timersMap.Remove(packetID);
             if (timer != null)
             {
