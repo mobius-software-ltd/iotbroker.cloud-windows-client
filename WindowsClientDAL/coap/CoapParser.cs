@@ -132,7 +132,9 @@ namespace com.mobius.software.windows.iotbroker.coap
                 {
                     realDelta = 14;
                     short remainingValue = (short)(delta - 269);
-                    extraDeltaBytes = BitConverter.GetBytes(remainingValue);
+                    extraDeltaBytes = new byte[2];
+                    extraDeltaBytes[0] = (byte)((remainingValue >> 8) & 0x0FF);
+                    extraDeltaBytes[1] = (byte)(remainingValue & 0x0FF);
                 }
                 else if (delta >= 13)
                 {
@@ -148,7 +150,9 @@ namespace com.mobius.software.windows.iotbroker.coap
                 {
                     realLength = 14;
                     short remainingValue = (short)(valueLength - 269);
-                    extraLengthBytes = BitConverter.GetBytes(remainingValue);
+                    extraLengthBytes = new byte[2];
+                    extraLengthBytes[0] = (byte)((remainingValue >> 8) & 0x0FF);
+                    extraLengthBytes[1] = (byte)(remainingValue & 0x0FF);
                 }
                 else if (valueLength >= 13)
                 {

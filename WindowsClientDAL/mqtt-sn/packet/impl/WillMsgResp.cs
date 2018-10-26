@@ -35,7 +35,8 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.packet.impl
             return this;
         }
 
-        public new int getLength()
+        override
+        public int getLength()
         {
             return 2;
         }

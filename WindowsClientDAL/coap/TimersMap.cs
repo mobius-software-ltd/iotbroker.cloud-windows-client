@@ -44,7 +44,7 @@ namespace com.mobius.software.windows.iotbroker.coap
         private Int64 _keepalivePeriod;
         private CoapClient _client;
 
-        private Dictionary<byte[],MessageResendTimer<CoapMessage>> _timersMap = new Dictionary<byte[], MessageResendTimer<CoapMessage>>();
+        private Dictionary<byte[],MessageResendTimer<CoapMessage>> _timersMap = new Dictionary<byte[], MessageResendTimer<CoapMessage>>(new ByteArrayComparer());
         private Int32 _packetIDCounter = MIN_VALUE;
 
         private MessageResendTimer<CoapMessage> _pingTimer;
@@ -111,7 +111,7 @@ namespace com.mobius.software.windows.iotbroker.coap
 
         public void RefreshTimer(MessageResendTimer<CoapMessage> timer)
         {
-            if(timer.Message.Token!=null)
+            if(timer.Message.Token==null || timer.Message.Token.Length==0)
                 timer.Execute(_keepalivePeriod);
             else
                 timer.Execute(_resendPeriod);                
@@ -119,12 +119,15 @@ namespace com.mobius.software.windows.iotbroker.coap
 
         public CoapMessage Remove(byte[] token)
         {
-            MessageResendTimer<CoapMessage> timer =_timersMap[token];
-            _timersMap.Remove(token);
-            if (timer != null)
+            if(_timersMap.ContainsKey(token))
             {
-                timer.Stop();
-                return timer.Message;
+                MessageResendTimer<CoapMessage> timer = _timersMap[token];
+                _timersMap.Remove(token);
+                if (timer != null)
+                {
+                    timer.Stop();
+                    return timer.Message;
+                }
             }
 
             return null;
@@ -189,7 +192,7 @@ namespace com.mobius.software.windows.iotbroker.coap
         private CoapMessage getPingreqMessage()
         {
             List<CoapOption> options = new List<CoapOption>();
-            byte[] token = BitConverter.GetBytes(0);
+            byte[] token = new byte[0];
             byte[] nodeIdBytes = Encoding.UTF8.GetBytes(_client.ClientID);
             options.Add(new CoapOption((int)CoapOptionType.NODE_ID, nodeIdBytes.Length, nodeIdBytes));
             CoapMessage coapMessage = new CoapMessage(CoapClient.VERSION, CoapType.CONFIRMABLE, CoapCode.PUT, 0, token, options, new byte[0]);

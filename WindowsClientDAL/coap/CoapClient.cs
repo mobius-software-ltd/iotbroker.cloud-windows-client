@@ -138,7 +138,7 @@ namespace com.mobius.software.windows.iotbroker.coap
                 _timers.StopAllTimers();
 
             _timers = new TimersMap(this, _client, RESEND_PERIOND, _keepalive * 1000);
-
+            _timers.StartPingTimer();
         }
 
         public Boolean Disconnect()
@@ -239,18 +239,19 @@ namespace com.mobius.software.windows.iotbroker.coap
         public void PacketReceived(CoapMessage message)
         {            
             CoapType type = message.CoapType;
-            if (message.CoapCode == CoapCode.POST || message.CoapCode == CoapCode.PUT)
+            if ((message.CoapCode == CoapCode.POST || message.CoapCode == CoapCode.PUT) && type != CoapType.ACKNOWLEDGEMENT)
             {
                 String topic = null;
+                QOS qos = QOS.AT_MOST_ONCE;
                 foreach (CoapOption option in message.Options)
+                {
                     if (option.Number == (int)CoapOptionType.URI_PATH)
-                    {
-                        topic = Encoding.UTF8.GetString(option.Value);
-                        break;
-                    }
+                        topic = Encoding.UTF8.GetString(option.Value);                        
+                    else if (option.Number == (int)CoapOptionType.ACCEPT)
+                        qos = (QOS)option.Value[option.Value.Length - 1];                    
+                }
 
-                byte[] content = message.Payload;
-                if (!_dbInterface.TopicExists(topic))
+                if (topic == null || !_dbInterface.TopicExists(topic))
                 {
                     List<CoapOption> options = new List<CoapOption>();
                     byte[] textBytes = Encoding.UTF8.GetBytes("text/plain");
@@ -259,8 +260,10 @@ namespace com.mobius.software.windows.iotbroker.coap
                     options.Add(new CoapOption((int)CoapOptionType.NODE_ID, nodeIdBytes.Length, nodeIdBytes));
                     CoapMessage ack = new CoapMessage(VERSION, CoapType.ACKNOWLEDGEMENT, CoapCode.BAD_OPTION, message.MessageID, message.Token, options, new byte[0]);
                     _client.Send(ack);
+                    return;
                 }
 
+                byte[] content = message.Payload;
                 _dbInterface.StoreMessage(topic, content, 0);
 
                 if (_listener != null)
@@ -271,9 +274,10 @@ namespace com.mobius.software.windows.iotbroker.coap
             {
                 case CoapType.CONFIRMABLE:
                     {
+                        List<CoapOption> options = new List<CoapOption>();
                         byte[] nodeIdBytes = Encoding.UTF8.GetBytes(_clientID);
-                        message.Options.Add(new CoapOption((int)CoapOptionType.NODE_ID, nodeIdBytes.Length, nodeIdBytes));
-                        CoapMessage ack = new CoapMessage(message.Version, CoapType.ACKNOWLEDGEMENT, message.CoapCode, message.MessageID, message.Token, message.Options, new byte[0]);
+                        options.Add(new CoapOption((int)CoapOptionType.NODE_ID, nodeIdBytes.Length, nodeIdBytes));
+                        CoapMessage ack = new CoapMessage(message.Version, CoapType.ACKNOWLEDGEMENT, message.CoapCode, message.MessageID, message.Token, options, new byte[0]);
                         _client.Send(ack);
                     }
                     break;

@@ -83,7 +83,7 @@ namespace com.mobius.software.windows.iotbroker.coap.net
                 loopGroup = new MultithreadEventLoopGroup(workerThreads);
                 bootstrap.Group(loopGroup);
                 bootstrap.Channel<SocketDatagramChannel>();
-                bootstrap.Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
+                bootstrap.Handler(new ActionChannelInitializer<SocketDatagramChannel>(channel =>
                 {
                     IChannelPipeline pipeline = channel.Pipeline;
                     pipeline.AddLast("handler", new CoapHandler(listener));
@@ -95,23 +95,26 @@ namespace com.mobius.software.windows.iotbroker.coap.net
 
                 try
                 {
-                    Task<IChannel> task = bootstrap.ConnectAsync();
+                    Task<IChannel> task = bootstrap.BindAsync(IPEndPoint.MinPort);
                     task.GetAwaiter().OnCompleted(() =>
                     {
                         try
                         {
                             channel = task.Result;
+                            Task connectTask = channel.ConnectAsync(address);
+                            connectTask.GetAwaiter().OnCompleted(() =>
+                            {
+                                if (channel != null)
+                                    listener.Connected();
+                                else
+                                    listener.ConnectFailed();
+                            });
                         }
                         catch (Exception)
                         {
                             listener.ConnectFailed();
                             return;
                         }
-
-                        if (channel != null)
-                            listener.Connected();
-                        else
-                            listener.ConnectFailed();
                     });
                 }
                 catch (Exception)

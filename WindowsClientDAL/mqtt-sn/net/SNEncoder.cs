@@ -9,6 +9,7 @@ using DotNetty.Transport.Channels.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,8 +37,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
 {
     public class SNEncoder : MessageToMessageEncoder<SNMessage>
     {
-        private IChannel _channel;
-
+        private IChannel _channel;        
         public SNEncoder(IChannel channel)
         {
             _channel = channel;

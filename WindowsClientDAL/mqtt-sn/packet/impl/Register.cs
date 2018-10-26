@@ -63,7 +63,8 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.packet.impl
             return this;
         }
 
-        public new int getLength()
+        override
+        public int getLength()
         {
             if (this._topicName == null)
                 throw new MalformedMessageException(this.GetType().Name + " must contain a valid topic name");

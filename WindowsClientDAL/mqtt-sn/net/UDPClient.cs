@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -97,23 +98,26 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
 
                 try
                 {
-                    Task<IChannel> task = bootstrap.ConnectAsync();
+                    Task<IChannel> task = bootstrap.BindAsync(IPEndPoint.MinPort);
                     task.GetAwaiter().OnCompleted(() =>
                     {
                         try
                         {
                             channel = task.Result;
+                            Task connectTask = channel.ConnectAsync(address);
+                            connectTask.GetAwaiter().OnCompleted(() =>
+                            {
+                                if (channel != null)
+                                    listener.Connected();
+                                else
+                                    listener.ConnectFailed();
+                            });
                         }
                         catch (Exception)
                         {                            
                             listener.ConnectFailed();
                             return;
-                        }
-
-                        if (channel != null)
-                            listener.Connected();
-                        else
-                            listener.ConnectFailed();
+                        }                        
                     });
                 }
                 catch (Exception)

@@ -51,7 +51,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.packet.api
 
         #region public fields
 
-        public int getLength()
+        public virtual int getLength()
         {
             return 4;
         }

@@ -227,6 +227,7 @@
     <Compile Include="amqp\wrappers\messageid\UuidID.cs" />
     <Compile Include="amqp\wrappers\messageid\LongID.cs" />
     <Compile Include="amqp\wrappers\messageid\StringID.cs" />
+    <Compile Include="coap\ByteArrayComparer.cs" />
     <Compile Include="coap\CoapClient.cs" />
     <Compile Include="coap\CoapParser.cs" />
     <Compile Include="coap\header\CoapType.cs" />

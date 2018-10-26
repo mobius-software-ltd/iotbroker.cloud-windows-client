@@ -46,7 +46,10 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.avps
 
         public byte[] encode()
         {
-            return BitConverter.GetBytes((short)_value);
+            byte[] output = new byte[2];
+            output[0] = (byte)((_value >> 8) & 0x0FF);
+            output[1] = (byte)(_value & 0x0FF);
+            return output;
         }
 
         public SNQoS getQos()
