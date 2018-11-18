@@ -37,6 +37,26 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+/**
+ * Mobius Software LTD
+ * Copyright 2015-2017, Mobius Software LTD
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 {
     public partial class LoadingForm : Form,ClientListener
@@ -99,19 +119,19 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             switch (_account.Protocol)
             {
                 case iotbroker.dal.Protocols.AMQP_PROTOCOL:
-                    _client = new AmqpClient(_dbInterface, endp, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, this);
+                    _client = new AmqpClient(_dbInterface, endp, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, _account.IsSecured, _account.certificate, _account.certificatePass, this);
                     break;
                 case iotbroker.dal.Protocols.COAP_PROTOCOL:
-                    _client = new CoapClient(_dbInterface, endp, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, this);
+                    _client = new CoapClient(_dbInterface, endp, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, _account.IsSecured, _account.certificate, _account.certificatePass, this);
                     break;
                 case iotbroker.dal.Protocols.MQTT_PROTOCOL:
-                    _client = new MqttClient(_dbInterface, endp, false, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, this);
+                    _client = new MqttClient(_dbInterface, endp, false, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, _account.IsSecured, _account.certificate, _account.certificatePass, this);
                     break;
                 case iotbroker.dal.Protocols.MQTT_SN_PROTOCOL:
-                    _client = new SNClient(_dbInterface, endp, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, this);
+                    _client = new SNClient(_dbInterface, endp, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, _account.IsSecured, _account.certificate, _account.certificatePass, this);
                     break;
                 case iotbroker.dal.Protocols.WS_PROTOCOL:
-                    _client = new MqttClient(_dbInterface, endp, true, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, this);
+                    _client = new MqttClient(_dbInterface, endp, true, _account.UserName, _account.Pass, _account.ClientID, _account.CleanSession, _account.KeepAlive, will, _account.IsSecured, _account.certificate, _account.certificatePass, this);
                     break;
             }
             

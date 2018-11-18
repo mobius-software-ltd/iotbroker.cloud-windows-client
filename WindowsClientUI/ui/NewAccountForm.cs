@@ -1,4 +1,44 @@
-﻿/**
+﻿
+
+using com.mobius.software.windows.iotbroker.dal;
+/**
+* Mobius Software LTD
+* Copyright 2015-2017, Mobius Software LTD
+*
+* This is free software; you can redistribute it and/or modify it
+* under the terms of the GNU Lesser General Public License as
+* published by the Free Software Foundation; either version 2.1 of
+* the License, or (at your option) any later version.
+*
+* This software is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this software; if not, write to the Free
+* Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+* 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+*/
+using com.mobius.software.windows.iotbroker.mqtt.avps;
+using com.mobius.software.windows.iotbroker.ui.win7.dal;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.X509;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+/**
  * Mobius Software LTD
  * Copyright 2015-2017, Mobius Software LTD
  *
@@ -17,18 +57,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
- 
-using com.mobius.software.windows.iotbroker.mqtt.avps;
-using com.mobius.software.windows.iotbroker.ui.win7.dal;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 {
@@ -38,6 +66,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
         {
             InitializeComponent();
             cmbProtocol.SelectedIndex = 0;
+            this.chkSecurity_CheckedChanged(chkSecurity,null);
         }
 
         private void txtWill_Click(object sender, EventArgs e)
@@ -45,6 +74,24 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             String value=txtWill.Text;
             if (InputBox("Editing Will", ref value) == DialogResult.OK)
                 txtWill.Text = value;
+        }
+
+        private void txtCertificate_Click(object sender, EventArgs e)
+        {
+            String value = txtWill.Text;
+            if (InputBox("Editing Certificate", ref value) == DialogResult.OK)
+            {
+                try
+                {
+                    CertificatesHelper.load(value, txtSecurityPassword.Text);
+                    txtCertificate.Text = value;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Can not load certificate , please verify that its in pem encoded format. In case password is required please provide it first");
+                    return;
+                }
+            }                
         }
 
         public static DialogResult InputBox(string title, ref string value)
@@ -182,7 +229,10 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             newAccount.KeepAlive = keepalive;
             newAccount.Will = Encoding.UTF8.GetBytes(txtWill.Text);
             newAccount.WillTopic = txtWillTopic.Text;
-            
+            newAccount.IsSecured = chkSecurity.Checked;
+            newAccount.certificatePass = txtSecurityPassword.Text;
+            newAccount.certificate = txtCertificate.Text;
+
             switch (cmbProtocol.SelectedIndex)
             {
                 case 0:
@@ -282,6 +332,20 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
                     this.pnlRetain.Show();
                     this.pnlQOS.Show();
                     break;
+            }
+        }
+
+        private void chkSecurity_CheckedChanged(object sender, EventArgs e)
+        {
+            if(chkSecurity.Checked)
+            {
+                this.pnlCertificate.Show();
+                this.pnlSecurityPassword.Show();
+            }
+            else
+            {
+                this.pnlCertificate.Hide();
+                this.pnlSecurityPassword.Hide();
             }
         }
     }

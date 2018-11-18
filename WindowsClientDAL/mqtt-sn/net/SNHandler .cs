@@ -24,6 +24,7 @@ using com.mobius.software.windows.iotbroker.mqtt.headers.api;
 using com.mobius.software.windows.iotbroker.mqtt_sn.headers.api;
 using com.mobius.software.windows.iotbroker.mqtt_sn.packet.api;
 using com.mobius.software.windows.iotbroker.network;
+using com.mobius.software.windows.iotbroker.network.dtls;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
 using System;
@@ -37,8 +38,8 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
     public class SNHandler : SimpleChannelInboundHandler<DatagramPacket>
     {
         private ConnectionListener<SNMessage> listener;
-
-	    public SNHandler(ConnectionListener<SNMessage> listener)
+        
+        public SNHandler(ConnectionListener<SNMessage> listener)
         {
             this.listener = listener;
         }
@@ -50,7 +51,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
             {
                 SNMessage result = SNParser.decode(msg.Content);
                 this.listener.PacketReceived(result);
-            }                
+            }
         }
 
         override

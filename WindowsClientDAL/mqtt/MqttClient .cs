@@ -50,11 +50,15 @@ namespace com.mobius.software.windows.iotbroker.mqtt
         private Boolean _isClean;
         private Int32 _keepalive;
         private Will _will;
+        private Boolean isSecured;
+        private String certificate;
+        private String certificatePassword;
+
         private ClientListener _listener;
         private DBInterface _dbInterface;
         private Boolean _isWs;
 
-        public MqttClient(DBInterface _interface, DnsEndPoint address, Boolean isWS, String username,String password, String clientID, Boolean isClean, int keepalive,Will will, ClientListener listener)
+        public MqttClient(DBInterface _interface, DnsEndPoint address, Boolean isWS, String username,String password, String clientID, Boolean isClean, int keepalive,Will will, Boolean isSecured,String certificate,String certificatePassword,ClientListener listener)
         {
 
             this._dbInterface = _interface;
@@ -66,11 +70,15 @@ namespace com.mobius.software.windows.iotbroker.mqtt
             this._isClean = isClean;
             this._keepalive = keepalive;
             this._will = will;
+            this.isSecured = isSecured;
+            this.certificate = certificate;
+            this.certificatePassword = certificatePassword;
+
             this._listener = listener;
             if(this._isWs)
-                _client = new WSClient(address, WORKER_THREADS);
+                _client = new WSClient(address, isSecured, certificate, certificatePassword, WORKER_THREADS);
             else
-                _client = new TCPClient(address, WORKER_THREADS);
+                _client = new TCPClient(address, isSecured, certificate, certificatePassword, WORKER_THREADS);
         }
 
         public void SetListener(ClientListener listener)
@@ -174,9 +182,9 @@ namespace com.mobius.software.windows.iotbroker.mqtt
                 _client.Shutdown();
 
             if (this._isWs)
-                _client = new WSClient(_address, WORKER_THREADS);
+                _client = new WSClient(_address, isSecured, certificate, certificatePassword, WORKER_THREADS);
             else
-                _client = new TCPClient(_address, WORKER_THREADS);            
+                _client = new TCPClient(_address, isSecured, certificate, certificatePassword, WORKER_THREADS);            
         }
 
         public void CloseConnection()
@@ -315,9 +323,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt
             }
 
             String topicName = topic.Name;
-            if (!_dbInterface.TopicExists(topicName))
-                return;
-
+            
             if (!(isDup && publisherQos == QOS.EXACTLY_ONCE))
                 _dbInterface.StoreMessage(topicName, content, publisherQos);                
 

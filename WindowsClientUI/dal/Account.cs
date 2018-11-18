@@ -50,5 +50,11 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.dal
         public Boolean IsRetain { get; set; }
         public QOS QOS { get; set; }
         public Boolean IsDefault { get; set; }
+
+        public Boolean IsSecured { get; set; }
+        public String certificatePass { get; set; }
+
+        [DataType(DataType.Text)]
+        public String certificate { get; set; }
     }
 }

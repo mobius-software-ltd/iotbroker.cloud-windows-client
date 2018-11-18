@@ -2,10 +2,12 @@
 using com.mobius.software.windows.iotbroker.mqtt_sn;
 using com.mobius.software.windows.iotbroker.mqtt_sn.headers.api;
 using com.mobius.software.windows.iotbroker.mqtt_sn.packet.api;
+using com.mobius.software.windows.iotbroker.network;
 using DotNetty.Buffers;
 using DotNetty.Codecs;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
+using Org.BouncyCastle.Crypto.Tls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +39,8 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
 {
     public class SNEncoder : MessageToMessageEncoder<SNMessage>
     {
-        private IChannel _channel;        
+        private IChannel _channel;
+
         public SNEncoder(IChannel channel)
         {
             _channel = channel;
@@ -46,7 +49,7 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn.net
         protected override void Encode(IChannelHandlerContext context, SNMessage message, List<object> output)
         {
             IByteBuffer buffer = SNParser.encode(message);
-            output.Add(new DatagramPacket(buffer, _channel.LocalAddress, _channel.RemoteAddress));
+            output.Add(new DatagramPacket(buffer, _channel.LocalAddress, _channel.RemoteAddress));            
         }
     }
 }

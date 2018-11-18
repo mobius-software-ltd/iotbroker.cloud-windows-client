@@ -57,6 +57,10 @@ namespace com.mobius.software.windows.iotbroker.amqp
         private Boolean _isClean;
         private Int32 _keepalive;
         private Will _will;
+        private Boolean isSecured;
+        private String certificate;
+        private String certificatePassword;
+
         private ClientListener _listener;
         private DBInterface _dbInterface;
 
@@ -70,7 +74,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
 
         private Int64? idleTimeout;
 
-        public AmqpClient(DBInterface _interface, DnsEndPoint address, String username,String password, String clientID, Boolean isClean, int keepalive,Will will, ClientListener listener)
+        public AmqpClient(DBInterface _interface, DnsEndPoint address, String username,String password, String clientID, Boolean isClean, int keepalive,Will will, Boolean isSecured, String certificate, String certificatePassword, ClientListener listener)
         {
             this._dbInterface = _interface;
             this._address = address;
@@ -80,8 +84,12 @@ namespace com.mobius.software.windows.iotbroker.amqp
             this._isClean = isClean;
             this._keepalive = keepalive;
             this._will = will;
+            this.isSecured = isSecured;
+            this.certificate = certificate;
+            this.certificatePassword = certificatePassword;
+
             this._listener = listener;
-            _client = new TCPClient(address, WORKER_THREADS);
+            _client = new TCPClient(address, isSecured, certificate, certificatePassword, WORKER_THREADS);
         }
 
         public Int64 GetKeepalivePeriod()
@@ -281,7 +289,7 @@ namespace com.mobius.software.windows.iotbroker.amqp
             if (_client != null)
                 _client.Shutdown();
 
-            _client = new TCPClient(_address, WORKER_THREADS);            
+            _client = new TCPClient(_address, isSecured, certificate, certificatePassword, WORKER_THREADS);            
         }
 
         public void CloseConnection()
@@ -463,9 +471,6 @@ namespace com.mobius.software.windows.iotbroker.amqp
                 return;
 
             topicName  = _usedMappings[handle.Value];
-            if (!_dbInterface.TopicExists(topicName))
-                return;
-
             _dbInterface.StoreMessage(topicName, data.Data, qos);
 
             if (_listener != null)

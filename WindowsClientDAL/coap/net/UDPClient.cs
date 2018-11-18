@@ -1,15 +1,22 @@
 ﻿using com.mobius.software.windows.iotbroker.coap.avps;
+using com.mobius.software.windows.iotbroker.dal;
 using com.mobius.software.windows.iotbroker.mqtt.net;
 using com.mobius.software.windows.iotbroker.network;
+using com.mobius.software.windows.iotbroker.network.dtls;
+using DotNetty.Buffers;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
+using Org.BouncyCastle.Crypto.Tls;
+using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 /**
 * Mobius Software LTD
@@ -33,7 +40,7 @@ using System.Threading.Tasks;
 
 namespace com.mobius.software.windows.iotbroker.coap.net
 {
-    public class UDPClient : NetworkChannel<CoapMessage>
+    public class UDPClient : NetworkChannel<CoapMessage>, DtlsStateHandler
     {
         private DnsEndPoint address;
         private Int32 workerThreads;
@@ -42,11 +49,28 @@ namespace com.mobius.software.windows.iotbroker.coap.net
         private MultithreadEventLoopGroup loopGroup;
         private IChannel channel;
 
+        private AsyncDtlsClientProtocol _clientProtocol;
+
+        private Boolean isSecured;
+        private String certificate;
+        private String certificatePassword;
+
+        private ConnectionListener<CoapMessage> _listener;
+
+        private Boolean _handshakeSuccesfull = false;
+        private System.Timers.Timer _handhshakeTimer = null;
+
+        private Int32 connectPeriod;
+
         // handlers for client connections
-        public UDPClient(DnsEndPoint address, Int32 workerThreads)
+        public UDPClient(DnsEndPoint address, Boolean isSecured, String certificate, String certificatePassword, Int32 workerThreads, Int32 connectPeriod)
         {
             this.address = address;
             this.workerThreads = workerThreads;
+            this.isSecured = isSecured;
+            this.certificate = certificate;
+            this.certificatePassword = certificatePassword;
+            this.connectPeriod = connectPeriod;
         }
 
         public void Shutdown()
@@ -79,13 +103,26 @@ namespace com.mobius.software.windows.iotbroker.coap.net
         {
             if (channel == null)
             {
+                this._listener = listener;
                 bootstrap = new Bootstrap();
                 loopGroup = new MultithreadEventLoopGroup(workerThreads);
                 bootstrap.Group(loopGroup);
                 bootstrap.Channel<SocketDatagramChannel>();
+                UDPClient currClient = this;
                 bootstrap.Handler(new ActionChannelInitializer<SocketDatagramChannel>(channel =>
                 {
                     IChannelPipeline pipeline = channel.Pipeline;
+                    if (isSecured)
+                    {
+                        Pkcs12Store keystore = null;
+                        if (certificate != null && certificate.Length > 0)
+                            keystore = CertificatesHelper.loadBC(certificate, certificatePassword);
+
+                        AsyncDtlsClient client = new AsyncDtlsClient(keystore, certificatePassword, null);
+                        _clientProtocol = new AsyncDtlsClientProtocol(client, new SecureRandom(), channel, null, currClient, true, ProtocolVersion.DTLSv12);
+                        pipeline.AddLast(new DtlsClientHandler(_clientProtocol, this));
+                    }
+
                     pipeline.AddLast("handler", new CoapHandler(listener));
                     pipeline.AddLast(new CoapEncoder(channel));
                     pipeline.AddLast(new ExceptionHandler());
@@ -104,10 +141,18 @@ namespace com.mobius.software.windows.iotbroker.coap.net
                             Task connectTask = channel.ConnectAsync(address);
                             connectTask.GetAwaiter().OnCompleted(() =>
                             {
-                                if (channel != null)
-                                    listener.Connected();
+                                if (_clientProtocol == null)
+                                {
+                                    if (channel != null)
+                                        listener.Connected();
+                                    else
+                                        listener.ConnectFailed();
+                                }
                                 else
-                                    listener.ConnectFailed();
+                                {                                    
+                                    startHandhshakeTimer();
+                                    _clientProtocol.InitHandshake(null);
+                                }
                             });
                         }
                         catch (Exception)
@@ -134,7 +179,46 @@ namespace com.mobius.software.windows.iotbroker.coap.net
         public void Send(CoapMessage message)
         {
             if (channel != null && channel.Open)
-                channel.WriteAndFlushAsync(message);
+            {
+                if (_clientProtocol != null)
+                {
+                    IByteBuffer buffer = CoapParser.encode(message);
+                    _clientProtocol.sendPacket(buffer);
+                }
+                else
+                    channel.WriteAndFlushAsync(message);
+            }
+        }
+
+        public void handshakeStarted(IChannel channel)
+        {
+            //nothing to do here
+        }
+
+        public void handshakeCompleted(IChannel channel)
+        {
+            _handshakeSuccesfull = true;
+            _listener.Connected();
+        }
+
+        public void errorOccured(IChannel channel)
+        {
+            _listener.ConnectFailed();
+        }
+
+        public void startHandhshakeTimer()
+        {
+            _handhshakeTimer = new System.Timers.Timer();
+            _handhshakeTimer.AutoReset = false;
+            _handhshakeTimer.Elapsed += new ElapsedEventHandler(handshakeVerification);
+            _handhshakeTimer.Interval = connectPeriod;
+            _handhshakeTimer.Enabled = true;
+        }
+
+        public void handshakeVerification(Object sender, ElapsedEventArgs args)
+        {
+            if (channel != null && channel.Open && !_handshakeSuccesfull)
+                _listener.ConnectFailed();
         }
     }
 }

@@ -70,6 +70,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.4.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.4\lib\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="DotNetty.Buffers, Version=0.5.0.0, Culture=neutral, PublicKeyToken=bc13ca065fa06c29, processorArchitecture=MSIL">
       <HintPath>..\packages\DotNetty.Buffers.0.5.0\lib\net45\DotNetty.Buffers.dll</HintPath>
       <Private>True</Private>
@@ -234,10 +238,14 @@
     <Compile Include="coap\header\CoapCode.cs" />
     <Compile Include="coap\net\CoapEncoder.cs" />
     <Compile Include="coap\net\CoapHandler .cs" />
+    <Compile Include="coap\net\DtlsClientHandler.cs" />
     <Compile Include="coap\net\UDPClient.cs" />
     <Compile Include="coap\TimersMap.cs" />
     <Compile Include="coap\tlv\CoapOption.cs" />
     <Compile Include="coap\tlv\CoapOptionType.cs" />
+    <Compile Include="dal\ArrayUtils.cs" />
+    <Compile Include="dal\CertificatesHelper.cs" />
+    <Compile Include="dal\PasswordFinder.cs" />
     <Compile Include="dal\Protocols.cs" />
     <Compile Include="dal\DBInterface.cs" />
     <Compile Include="dal\StringEnum.cs" />
@@ -258,6 +266,7 @@
     <Compile Include="mqtt-sn\avps\TopicType.cs" />
     <Compile Include="mqtt-sn\CoreLogicException.cs" />
     <Compile Include="mqtt-sn\exceptions\MalformedMessageException.cs" />
+    <Compile Include="mqtt-sn\net\DtlsClientHandler.cs" />
     <Compile Include="mqtt-sn\packet\api\SNDevice.cs" />
     <Compile Include="mqtt-sn\SNClient .cs" />
     <Compile Include="mqtt-sn\net\SNEncoder.cs" />
@@ -327,6 +336,29 @@
     <Compile Include="mqtt\headers\impl\Subscribe.cs" />
     <Compile Include="mqtt\headers\impl\Unsuback.cs" />
     <Compile Include="mqtt\headers\impl\Unsubscribe.cs" />
+    <Compile Include="network\dtls\AsyncCertificateRequest.cs" />
+    <Compile Include="network\dtls\AsyncDtlsClient.cs" />
+    <Compile Include="network\dtls\AsyncDtlsClientAuthentication.cs" />
+    <Compile Include="network\dtls\AsyncDtlsClientContext.cs" />
+    <Compile Include="network\dtls\AsyncDtlsClientProtocol.cs" />
+    <Compile Include="network\dtls\AsyncDtlsClientState.cs" />
+    <Compile Include="network\dtls\AsyncDtlsEpoch.cs" />
+    <Compile Include="network\dtls\AsyncDtlsRecordLayer.cs" />
+    <Compile Include="network\dtls\AsyncDtlsReplayWindow.cs" />
+    <Compile Include="network\dtls\AsyncDtlsSecurityParameters.cs" />
+    <Compile Include="network\dtls\AsyncDtlsSessionImpl.cs" />
+    <Compile Include="network\dtls\AsyncTlsDHEKeyExchange.cs" />
+    <Compile Include="network\dtls\AsyncTlsECDHEKeyExchange.cs" />
+    <Compile Include="network\dtls\CertificateData.cs" />
+    <Compile Include="network\dtls\CombinedHash.cs" />
+    <Compile Include="network\dtls\DeferredHash.cs" />
+    <Compile Include="network\dtls\DigestInputBuffer.cs" />
+    <Compile Include="network\dtls\DtlsHelper.cs" />
+    <Compile Include="network\dtls\DtlsStateHandler.cs" />
+    <Compile Include="network\dtls\HandshakeHandler.cs" />
+    <Compile Include="network\dtls\HandshakeHeader.cs" />
+    <Compile Include="network\dtls\MessageType.cs" />
+    <Compile Include="network\dtls\PendingMessageData.cs" />
     <Compile Include="network\MessageResendTimer.cs" />
     <Compile Include="mqtt\MQParser.cs" />
     <Compile Include="mqtt\MqttClient .cs" />

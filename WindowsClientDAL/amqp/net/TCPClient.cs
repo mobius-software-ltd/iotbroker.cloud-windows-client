@@ -1,6 +1,7 @@
 ﻿
 
 using com.mobius.software.windows.iotbroker.amqp.headerapi;
+using com.mobius.software.windows.iotbroker.dal;
 /**
 * Mobius Software LTD
 * Copyright 2015-2017, Mobius Software LTD
@@ -22,6 +23,7 @@ using com.mobius.software.windows.iotbroker.amqp.headerapi;
 */
 using com.mobius.software.windows.iotbroker.mqtt.headers.api;
 using com.mobius.software.windows.iotbroker.network;
+using DotNetty.Handlers.Tls;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
@@ -29,6 +31,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -43,12 +47,18 @@ namespace com.mobius.software.windows.iotbroker.amqp.net
         private Bootstrap bootstrap;
         private MultithreadEventLoopGroup loopGroup;
         private IChannel channel;
-        
+        private Boolean isSecured;
+        private String certificate;
+        private String certificatePassword;
+
         // handlers for client connections
-        public TCPClient(DnsEndPoint address, Int32 workerThreads)
+        public TCPClient(DnsEndPoint address, Boolean isSecured, String certificate, String certificatePassword, Int32 workerThreads)
         {
             this.address = address;
             this.workerThreads = workerThreads;
+            this.isSecured = isSecured;
+            this.certificate = certificate;
+            this.certificatePassword = certificatePassword;
         }
 
         public void Shutdown()
@@ -87,9 +97,22 @@ namespace com.mobius.software.windows.iotbroker.amqp.net
                 bootstrap.Channel<TcpSocketChannel>();
 			    bootstrap.Option(ChannelOption.TcpNodelay, true);
 			    bootstrap.Option(ChannelOption.SoKeepalive, true);
-			    bootstrap.Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
+
+                X509Certificate2 cert = null;
+                if (certificate != null && certificate.Length > 0)
+                    cert = CertificatesHelper.load(certificate, certificatePassword);
+
+                bootstrap.Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                 {
                     IChannelPipeline pipeline = channel.Pipeline;
+                    if(isSecured)
+                    {                        
+                        if(cert!=null)
+                            pipeline.AddLast("ssl", new TlsHandler(stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true, (sender, targetHost, localCertificates, remoteCertificate, acceptableIssuers) => cert), new ClientTlsSettings(address.Host, new List<X509Certificate>() { cert })));
+                        else
+                            pipeline.AddLast("ssl", TlsHandler.Client(address.Host));
+                    }
+                        
                     pipeline.AddLast(new AMQPDecoder());
                     pipeline.AddLast("handler", new AMQPHandler(listener));
                     pipeline.AddLast(new AMQPEncoder());

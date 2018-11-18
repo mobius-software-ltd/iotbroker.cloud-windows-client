@@ -51,10 +51,14 @@ namespace com.mobius.software.windows.iotbroker.coap
         private Boolean _isClean;
         private Int32 _keepalive;
         private Will _will;
+        private Boolean isSecured;
+        private String certificate;
+        private String certificatePassword;
+
         private ClientListener _listener;
         private DBInterface _dbInterface;
 
-        public CoapClient(DBInterface _interface, DnsEndPoint address, String username, String password, String clientID, Boolean isClean, int keepalive, Will will, ClientListener listener)
+        public CoapClient(DBInterface _interface, DnsEndPoint address, String username, String password, String clientID, Boolean isClean, int keepalive, Will will, Boolean isSecured, String certificate, String certificatePassword, ClientListener listener)
         {
 
             this._dbInterface = _interface;
@@ -66,7 +70,11 @@ namespace com.mobius.software.windows.iotbroker.coap
             this._keepalive = keepalive;
             this._will = will;
             this._listener = listener;
-            _client = new UDPClient(address, WORKER_THREADS);
+            this.isSecured = isSecured;
+            this.certificate = certificate;
+            this.certificatePassword = certificatePassword;
+
+            _client = new UDPClient(address, isSecured,certificate,certificatePassword,WORKER_THREADS,keepalive*1000);
         }
 
         public void SetListener(ClientListener listener)
@@ -251,7 +259,7 @@ namespace com.mobius.software.windows.iotbroker.coap
                         qos = (QOS)option.Value[option.Value.Length - 1];                    
                 }
 
-                if (topic == null || !_dbInterface.TopicExists(topic))
+                if (topic == null)
                 {
                     List<CoapOption> options = new List<CoapOption>();
                     byte[] textBytes = Encoding.UTF8.GetBytes("text/plain");

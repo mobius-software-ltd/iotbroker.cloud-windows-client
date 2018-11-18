@@ -34,6 +34,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui.controls
     {
         private Pen selectedColorPen = new Pen(Color.FromArgb(221, 221, 221));
         private Pen whiteColorPen = new Pen(Color.White);
+        private SolidBrush whiteBrush = new SolidBrush(Color.White);
         private SolidBrush grayBrush = new SolidBrush(Color.FromArgb(219, 227, 229));
         private SolidBrush darkGrayBrush = new SolidBrush(Color.FromArgb(148, 156, 161));
         private Pen pen = new Pen(Color.FromArgb(219, 227, 229));
@@ -41,7 +42,8 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui.controls
         protected override void Paint(Graphics graphics, Rectangle clipBounds, Rectangle cellBounds, int rowIndex, DataGridViewElementStates cellState, object value, object formattedValue, string errorText, DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts)
         {
             SolidBrush titleBrush = darkGrayBrush;
-            
+
+            graphics.FillRectangle(whiteBrush, cellBounds);
             graphics.DrawRectangle(whiteColorPen, clipBounds);
             Font titleFont = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold);
             Font regularFont = new Font(FontFamily.GenericSansSerif, 9, FontStyle.Regular);
