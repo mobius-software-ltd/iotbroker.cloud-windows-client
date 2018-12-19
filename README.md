@@ -1,29 +1,37 @@
 # IoTBroker.Cloud Windows Client
 
-IoTBroker.Cloud is a Windows client which allows to connect to MQTT server. IoTBroker.Cloud Windows client sticks to [MQTT 3.1.1](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.pdf) standards. 
+### Project description
 
-## Features
+IoTBroker.cloud C Client is an application that allows you to connect to the server using MQTT, MQTT-SN, 
+AMQP or COAP protocols. IoTBroker.cloud Java Client gives the opportunity to exchange messages using protocols 
+mentioned above. Your data can be also encrypted with **TLS** or **DTLS** secure protocols.   
 
-* **Clean / persistent session.** When the client disconnects, its session state can be stored (if you set Clean session flag to false) or removed (if you set Clean session flag to true). The session state includes subscriptions and incoming QoS 1 and QoS 2 messages while the client is off.
+Below you can find a brief description of each protocol that can help you make your choice. 
+If you need to get more information, you can find it in our [blog](https://www.iotbroker.cloud/clientApps/C/MQTT).
+ 
+**MQTT** is a lightweight publish-subscribe based messaging protocol built for use over TCP/IP.  
+MQTT was designed to provide devices with limited resources an easy way to communicate effectively. 
+You need to familiarize yourself with the following MQTT features such as frequent communication drops, low bandwidth, 
+low storage and processing capabilities of devices. 
 
-* **Last Will and Testament.** This feature implies that if a client goes offline without sending DISCONNECT message (due to some failure), other clients will be notified about that.
+Frankly, **MQTT-SN** is very similar to MQTT, but it was created for avoiding the potential problems that may occur at WSNs. 
 
-* **Keep Alive.** If Keep Alive is higher than 0, the client and the server is constantly exchanging PING messages to make sure whether the opposite side is still available. 
+Creating large and complex systems is always associated with solving data exchange problems between their various nodes. 
+Additional difficulties are brought by such factors as the requirements for fault tolerance, 
+he geographical diversity of subsystems, the presence a lot of nodes interacting with each others. 
+The **AMQP** protocol was developed to solve all these problems, which has three basic concepts: 
+exchange, queue and routing key. 
 
-* **Retain messages.** It allows to "attach" a message to a particular topic, so the new subscribers become immediately aware of the last known state of a topic.
-
-* **Assured message delivery.** Each message is sent according to the level of Quality of Service (QoS). 3 QoS levels are supported:
-- QoS 0 (At most once) — a message is sent only one time. 
-- QoS 1 (At least once) — a message is sent at least one time.
-- QoS 2 (Exactly once) — a message is sent exactly one time.
-
-## Getting Started
+If you need to find a simple solution, it is recommended to choose the **COAP** protocol. 
+The CoAP is a specialized web transfer protocol for use with constrained nodes and constrained (e.g., low-power, lossy) networks. It was developed to be used in very simple electronics devices that allows them to communicate interactively over the Internet. It is particularly targeted for small low power sensors, switches, valves and similar components that need to be controlled or supervised remotely, through standard Internet networks.   
+ 
+### Getting Started
 
 These instructions will help you get a copy of the project and run it.
 
 ### Prerequisites
 
-[Visual Studio](https://www.visualstudio.com/downloads) should be installed before starting to clone IoTBroker.Cloud Windows Client. 
+[Visual Studio](https://download.cnet.com/Visual-Studio-Professional-2015/3000-2212_4-76440612.html) should be installed before starting to clone IoTBroker.Cloud Windows Client. Note that you need to download Visual Studio Professional 2015.
 
 ### Installation
 * To install IoTBroker.Cloud, first you should clone [IotBroker.Cloud Windows Client](https://github.com/mobius-software-ltd/iotbroker.cloud-windows-client.git).
