@@ -36,7 +36,7 @@ These instructions will help you get a copy of the project and run it.
 ### Installation
 * To install IoTBroker.Cloud, first you should clone [IotBroker.Cloud Windows Client](https://github.com/mobius-software-ltd/iotbroker.cloud-windows-client.git).
 
-* In order to open IoTBroker.Cloud Windows client in Visual Studio, you should go to *File — Open — Project / Solution*. Then choose the **WindowsClient.sln** file.
+* In order to open IoTBroker.Cloud Windows client in Visual Studio, you should go to **File > Open > Project / Solution*. Then choose the **WindowsClient.sln** file.
 
 * Finally you should press **Start** sign to run the project. If the procedure is successful, you will see the Login page in the form of pop-up window. Now you are able to log in and to start exchanging messages with MQTT server.
 
