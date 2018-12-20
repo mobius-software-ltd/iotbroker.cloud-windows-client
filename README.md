@@ -2,8 +2,8 @@
 
 ### Project description
 
-IoTBroker.cloud C Client is an application that allows you to connect to the server using MQTT, MQTT-SN, 
-AMQP or COAP protocols. IoTBroker.cloud Java Client gives the opportunity to exchange messages using protocols 
+IoTBroker.cloud C# Client is an application that allows you to connect to the server using MQTT, MQTT-SN, 
+AMQP or COAP protocols. IoTBroker.cloud C# Client gives the opportunity to exchange messages using protocols 
 mentioned above. Your data can be also encrypted with **TLS** or **DTLS** secure protocols.   
 
 Below you can find a brief description of each protocol that can help you make your choice. 
@@ -18,7 +18,7 @@ Frankly, **MQTT-SN** is very similar to MQTT, but it was created for avoiding th
 
 Creating large and complex systems is always associated with solving data exchange problems between their various nodes. 
 Additional difficulties are brought by such factors as the requirements for fault tolerance, 
-he geographical diversity of subsystems, the presence a lot of nodes interacting with each others. 
+the geographical diversity of subsystems, the presence a lot of nodes interacting with each others. 
 The **AMQP** protocol was developed to solve all these problems, which has three basic concepts: 
 exchange, queue and routing key. 
 
