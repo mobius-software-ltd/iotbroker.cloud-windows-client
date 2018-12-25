@@ -42,6 +42,6 @@ These instructions will help you get a copy of the project and run it.
 
 Please note that at this stage it is not possible to register as a client. You can only log in to your existing account.
 
-IoTBroker.Cloud Windows Client is developed by [Mobius Software](http://mobius-software.com).
+IoTBroker.Cloud Windows Client is developed by [Mobius Software](https://www.mobius-software.com/).
 
 ## [License](LICENSE.md)
