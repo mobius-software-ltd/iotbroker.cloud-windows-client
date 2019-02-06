@@ -1,4 +1,4 @@
-﻿using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
@@ -43,7 +43,7 @@ namespace com.mobius.software.windows.iotbroker.dal
                 reader = new PemReader(new StringReader(value));
 
             List<X509CertificateEntry> chain = new List<X509CertificateEntry>();
-            AsymmetricCipherKeyPair privKey = null;
+            AsymmetricKeyParameter privKey = null;
 
             object o;
             while ((o = reader.ReadObject()) != null)
@@ -51,11 +51,13 @@ namespace com.mobius.software.windows.iotbroker.dal
                 if (o is X509Certificate)
                     chain.Add(new X509CertificateEntry((X509Certificate)o));
                 else if (o is AsymmetricCipherKeyPair)
-                    privKey = (AsymmetricCipherKeyPair)o;
+                    privKey = ((AsymmetricCipherKeyPair)o).Private;
+                else if (o is AsymmetricKeyParameter)
+                    privKey = (AsymmetricKeyParameter)o;
             }
 
             Pkcs12Store store = new Pkcs12StoreBuilder().Build();
-            store.SetKeyEntry("certificate", new AsymmetricKeyEntry(privKey.Private), chain.ToArray());
+            store.SetKeyEntry("certificate", new AsymmetricKeyEntry(privKey), chain.ToArray());
             MemoryStream ms = new MemoryStream();
             store.Save(ms, password.ToCharArray(), new SecureRandom());
             System.Security.Cryptography.X509Certificates.X509Certificate2 realCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(ms.ToArray());
@@ -71,7 +73,7 @@ namespace com.mobius.software.windows.iotbroker.dal
                 reader = new PemReader(new StringReader(value));
 
             List<X509CertificateEntry> chain = new List<X509CertificateEntry>();
-            AsymmetricCipherKeyPair privKey = null;
+            AsymmetricKeyParameter privKey = null;
 
             object o;
             while ((o = reader.ReadObject()) != null)
@@ -79,11 +81,13 @@ namespace com.mobius.software.windows.iotbroker.dal
                 if (o is X509Certificate)
                     chain.Add(new X509CertificateEntry((X509Certificate)o));
                 else if (o is AsymmetricCipherKeyPair)
-                    privKey = (AsymmetricCipherKeyPair)o;
+                    privKey = ((AsymmetricCipherKeyPair)o).Private;
+                else if (o is AsymmetricKeyParameter)
+                    privKey = (AsymmetricKeyParameter)o;
             }
 
             Pkcs12Store store = new Pkcs12StoreBuilder().Build();
-            store.SetKeyEntry("certificate", new AsymmetricKeyEntry(privKey.Private), chain.ToArray());
+            store.SetKeyEntry("certificate", new AsymmetricKeyEntry(privKey), chain.ToArray());
             return store;
         }
     }
