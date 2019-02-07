@@ -60,7 +60,7 @@ namespace com.mobius.software.windows.iotbroker.dal
             store.SetKeyEntry("certificate", new AsymmetricKeyEntry(privKey), chain.ToArray());
             MemoryStream ms = new MemoryStream();
             store.Save(ms, password.ToCharArray(), new SecureRandom());
-            System.Security.Cryptography.X509Certificates.X509Certificate2 realCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(ms.ToArray());
+            System.Security.Cryptography.X509Certificates.X509Certificate2 realCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(ms.ToArray(), password);
             return realCertificate;
         }
 
