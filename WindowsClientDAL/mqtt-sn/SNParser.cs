@@ -482,7 +482,10 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn
                     byte publishFlagsByte = Flags.encode(publish.Dup, publish.SnTopic.getQos(), publish.Retain, false, false, publish.SnTopic.getType());
                     buf.WriteByte(publishFlagsByte);
                     buf.WriteBytes(publish.SnTopic.encode());
-                    buf.WriteShort(publish.MessageID.Value);
+                    if (publish.MessageID.HasValue)
+                        buf.WriteShort(publish.MessageID.Value);
+                    else
+                        buf.WriteShort(0);
                     buf.WriteBytes(publish.Content);
                     break;
 

@@ -462,7 +462,9 @@ namespace com.mobius.software.windows.iotbroker.mqtt_sn
                         pendingMessages.RemoveAt(i);
                         i--;
                         currMessage.SnTopic = new IdentifierTopic(topicID, ((FullTopic)currMessage.SnTopic).Qos);
-                        _timers.Store(currMessage);
+                        if (((IdentifierTopic)currMessage.SnTopic).Qos != SNQoS.AT_MOST_ONCE)
+                            _timers.Store(currMessage);
+
                         _client.Send(currMessage);
                     }
                 }
