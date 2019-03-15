@@ -82,29 +82,35 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             {
                 DialogResult result = DialogResult.None;
                 this.Hide();
-                AccountsDialog dialogForm = new AccountsDialog();
-                result = dialogForm.ShowDialog();
-                if (result == DialogResult.Cancel)
-                {
-                    Application.Exit();
-                    return;
-                }
 
-                if (result == DialogResult.Ignore)
+                while(true)
                 {
-                    NewAccountForm newAccountForm = new NewAccountForm();
-                    result = newAccountForm.ShowDialog();
+                    Boolean shouldShow = true;
+                    AccountsDialog dialogForm = new AccountsDialog();
+                    result = dialogForm.ShowDialog();
                     if (result == DialogResult.Cancel)
                     {
                         Application.Exit();
                         return;
                     }
-                }
 
-                this.Show();
-                accounts = from a in mqtt.Accounts where a.IsDefault == true select a;
-                this._account = accounts.First();                
-                initConnect();
+                    if (result == DialogResult.Ignore)
+                    {
+                        NewAccountForm newAccountForm = new NewAccountForm();
+                        result = newAccountForm.ShowDialog();
+                        if (result == DialogResult.Cancel)
+                            shouldShow = false;
+                    }
+
+                    if (shouldShow)
+                    {
+                        this.Show();
+                        accounts = from a in mqtt.Accounts where a.IsDefault == true select a;
+                        this._account = accounts.First();
+                        initConnect();
+                        return;
+                    }
+                }
             }
         }
 

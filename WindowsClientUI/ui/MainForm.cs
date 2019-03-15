@@ -306,7 +306,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             MQTTModel _context = new MQTTModel();
             List<dal.Topic> topics= (from t in _context.Topics where t.Account.ID == _account.ID select t).ToList();
             this.topicsGrid.DataSource = topics;
-            List<dal.Message> messages = (from m in _context.Messages.Include("Account") where m.Account.ID == _account.ID orderby m.ID descending select m).ToList();
+            List<dal.Message> messages = (from m in _context.Messages.Include("Account") where m.Account.ID == _account.ID orderby m.ID ascending select m).ToList();
             this.messagesGrid.DataSource = messages;
         }
 

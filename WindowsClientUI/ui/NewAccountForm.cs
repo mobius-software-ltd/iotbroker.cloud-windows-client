@@ -83,7 +83,9 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             {
                 try
                 {
-                    CertificatesHelper.load(value, txtSecurityPassword.Text);
+                    if(value.Length>0)
+                        CertificatesHelper.load(value, txtSecurityPassword.Text);
+
                     txtCertificate.Text = value;
                 }
                 catch (Exception)
@@ -192,6 +194,12 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             }
 
             if (keepalive <= 0)
+            {
+                MessageBox.Show("Keepalive has invalid value");
+                return;
+            }
+
+            if (keepalive >= 65535)
             {
                 MessageBox.Show("Keepalive has invalid value");
                 return;
