@@ -72,7 +72,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
         private void txtWill_Click(object sender, EventArgs e)
         {
             String value=txtWill.Text;
-            if (InputBox("Editing Will", ref value) == DialogResult.OK)
+            if (InputBox("Editing Will", ref value) == DialogResult.OK)            
                 txtWill.Text = value;
         }
 
@@ -224,6 +224,12 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
                     MessageBox.Show("Please choose will QOS");
                     return;
                 }
+
+                if (txtWill.Text.Length > 1400 && cmbProtocol.SelectedIndex == 1)
+                {
+                    MessageBox.Show("Maximum Will length for SN could be 1400");
+                    return;
+                }
             }
 
             Account newAccount = new Account();
@@ -273,8 +279,15 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
                     break;
             }
 
-            newAccount.IsDefault = true;
             MQTTModel mqtt = new MQTTModel();
+            var accounts = from a in mqtt.Accounts where a.ClientID == newAccount.ClientID where a.ServerHost == newAccount.ServerHost where a.ServerPort==newAccount.ServerPort where a.UserName==newAccount.UserName select a;
+            if (accounts.Count() > 0)
+            {
+                MessageBox.Show("This account already exists in list");
+                return;
+            }
+
+            newAccount.IsDefault = true;
             mqtt.Accounts.Add(newAccount);
             mqtt.SaveChanges();
             this.DialogResult = DialogResult.OK;

@@ -533,8 +533,8 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this.newMessageLayout.ColumnCount = 1;
             this.newMessageLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.newMessageLayout.Controls.Add(this.sendButton, 0, 6);
-            this.newMessageLayout.Controls.Add(this.pnlDuplicate, 0, 5);
-            this.newMessageLayout.Controls.Add(this.pnlRetain, 0, 4);
+            this.newMessageLayout.Controls.Add(this.pnlDuplicate, 0, 4);
+            this.newMessageLayout.Controls.Add(this.pnlRetain, 0, 5);
             this.newMessageLayout.Controls.Add(this.pnlQOS, 0, 3);
             this.newMessageLayout.Controls.Add(this.pnlTopic, 0, 2);
             this.newMessageLayout.Controls.Add(this.pnlContent, 0, 1);

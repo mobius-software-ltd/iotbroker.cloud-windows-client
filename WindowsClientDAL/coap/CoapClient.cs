@@ -302,17 +302,18 @@ namespace com.mobius.software.windows.iotbroker.coap
                             QOS qos = QOS.AT_MOST_ONCE;
                             foreach (CoapOption option in message.Options)
                             {
-                                if (option.Number == (int)CoapOptionType.OBSERVE && option.Value.Length>0)
+                                if (option.Number == (int)CoapOptionType.OBSERVE && option.Value.Length > 0)
                                 {
-                                    if (option.Value[option.Value.Length-1] == 0x00)
+                                    if (option.Value[option.Value.Length - 1] == 0x00)
                                         observe = false;
                                     else
                                         observe = true;
-
-                                    break;
                                 }
                                 else if (option.Number == (int)CoapOptionType.ACCEPT)
-                                    qos = (QOS)option.Value[option.Value.Length - 1];
+                                {
+                                    if (option.Value[option.Value.Length - 1] == 0)
+                                        qos = QOS.AT_LEAST_ONCE;
+                                }
                             }
 
                             if (observe.HasValue)

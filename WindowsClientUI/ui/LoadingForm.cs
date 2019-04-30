@@ -197,6 +197,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
                 Application.Exit();
             else
             {
+                ((MainForm)sender).Dispose();
                 this.Show();
                 LoadingForm_Load(this, null);
             }

@@ -80,9 +80,9 @@ namespace com.mobius.software.windows.iotbroker.coap
 
                 int optionLength = nextByte & 15;
                 if (optionLength == 13)
-                    optionLength = (optionLength << 8 | buf.ReadByte()) - 13;
+                    optionLength = buf.ReadByte() + 13;
                 else if (optionLength == 14)
-                    optionLength = (optionLength << 16 | buf.ReadByte() << 8 | buf.ReadByte()) - 269;
+                    optionLength = buf.ReadByte() + 269;
                 else if (optionLength < 0 || optionLength > 14)
                     throw new ArgumentException("invalid option length");
 

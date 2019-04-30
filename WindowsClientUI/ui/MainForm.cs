@@ -74,13 +74,38 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 
             if (this._account.Protocol == iotbroker.dal.Protocols.AMQP_PROTOCOL)
             {
-                cmbNewTopicQOS.SelectedIndex = 1;
-                cmbNewTopicQOS.Enabled = false;                
+                pnlDuplicate.Hide();
+                pnlRetain.Hide();
+            }
+            else if (this._account.Protocol == iotbroker.dal.Protocols.COAP_PROTOCOL)
+            {
+                pnlDuplicate.Show();
+                pnlRetain.Hide();
+            }
+            else
+            {
+                pnlDuplicate.Show();
+                pnlRetain.Show();
+            }
+
+            if (this._account.Protocol == iotbroker.dal.Protocols.AMQP_PROTOCOL || this._account.Protocol == iotbroker.dal.Protocols.COAP_PROTOCOL)
+            {
+                this.cmbNewTopicQOS.Items.Clear();
+                this.cmbNewTopicQOS.Items.AddRange(new object[] {"QOS0","QOS1"});
+
+                this.cmbQOS.Items.Clear();
+                if (this._account.Protocol == iotbroker.dal.Protocols.AMQP_PROTOCOL)
+                    this.cmbQOS.Items.AddRange(new object[] {"QOS0"});  
+                else
+                    this.cmbQOS.Items.AddRange(new object[] { "QOS0", "QOS1" });
             }                
             else
             {
-                cmbNewTopicQOS.Enabled = true;
-                cmbNewTopicQOS.SelectedIndex = -1;
+                this.cmbNewTopicQOS.Items.Clear();
+                this.cmbNewTopicQOS.Items.AddRange(new object[] { "QOS0", "QOS1", "QOS2" });
+
+                this.cmbQOS.Items.Clear();
+                this.cmbQOS.Items.AddRange(new object[] { "QOS0", "QOS1", "QOS2" });
             }
         }
 
@@ -162,7 +187,17 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
         {
             String value = txtContent.Text;
             if (InputBox("Editing Message Content", ref value) == DialogResult.OK)
+            {
+                if (_account.Protocol == iotbroker.dal.Protocols.MQTT_SN_PROTOCOL || _account.Protocol == iotbroker.dal.Protocols.COAP_PROTOCOL)
+                {
+                    if (value.Length > 1400)
+                    {
+                        MessageBox.Show("Maximum message length for COAP and SN is 1400 characters");
+                        return;
+                    }
+                }
                 txtContent.Text = value;
+            }                
         }
 
         public static DialogResult InputBox(string title, ref string value)
@@ -291,8 +326,7 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             mqtt.avps.Topic[] topics = new mqtt.avps.Topic[] { new mqtt.avps.Topic(txtNewTopicName.Text, topicQOS) };
             txtNewTopicName.Text = String.Empty;
 
-            if (this._account.Protocol!=iotbroker.dal.Protocols.AMQP_PROTOCOL)
-                cmbNewTopicQOS.SelectedIndex = -1;
+            cmbNewTopicQOS.SelectedIndex = -1;
 
             MessageBox.Show("Topic Request Sent", "Adding new topic request sent to server", MessageBoxButtons.OK, MessageBoxIcon.Information);
             _client.Subscribe(topics);
