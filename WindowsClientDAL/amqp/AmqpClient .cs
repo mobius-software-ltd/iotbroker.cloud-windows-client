@@ -176,28 +176,25 @@ namespace com.mobius.software.windows.iotbroker.amqp
             for(int i=0;i<topics.Length;i++)
             {
                 Int64 currentHandler;
-                if (_usedIncomingMappings.ContainsKey(topics[i].Name))
-                    currentHandler = _usedIncomingMappings[topics[i].Name];
-                else
+                if (!_usedIncomingMappings.ContainsKey(topics[i].Name))
                 {
                     currentHandler = _nextHandle++;
                     _usedIncomingMappings[topics[i].Name] = currentHandler;
                     _usedMappings[currentHandler] = topics[i].Name;
+                    AMQPAttach attach = new AMQPAttach();
+                    attach.Channel = _channel;
+                    attach.Name = topics[i].Name;
+                    attach.Handle = currentHandler;
+                    attach.Role = RoleCodes.RECEIVER;
+                    attach.SndSettleMode = SendCodes.MIXED;
+                    AMQPTarget target = new AMQPTarget();
+                    target.Address = topics[i].Name;
+                    target.Durable = TerminusDurability.NONE;
+                    target.Timeout = 0;
+                    target.Dynamic = false;
+                    attach.Target = target;
+                    _client.Send(attach);
                 }
-
-                AMQPAttach attach = new AMQPAttach();
-                attach.Channel = _channel;
-                attach.Name = topics[i].Name;
-                attach.Handle = currentHandler;
-                attach.Role = RoleCodes.RECEIVER;
-                attach.SndSettleMode = SendCodes.MIXED;
-                AMQPTarget target = new AMQPTarget();
-                target.Address = topics[i].Name;
-                target.Durable = TerminusDurability.NONE;
-                target.Timeout = 0;
-                target.Dynamic = false;
-                attach.Target = target;
-                _client.Send(attach);
             }
         }
 
@@ -499,6 +496,9 @@ namespace com.mobius.software.windows.iotbroker.amqp
                 _usedMappings.Remove(handle.Value);
                 if (_usedOutgoingMappings.ContainsKey(topicName))
                     _usedOutgoingMappings.Remove(topicName);
+
+                if (_usedIncomingMappings.ContainsKey(topicName))
+                    _usedIncomingMappings.Remove(topicName);
 
                 _dbInterface.DeleteTopic(topicName);
                 if (_listener != null)

@@ -129,6 +129,9 @@ namespace com.mobius.software.windows.iotbroker.amqp.wrappers
             else if (value.Length > 1)
                 code = AMQPType.UINT;
 
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(value);
+
             return new TLVFixed(code, value);
         }
 
@@ -136,6 +139,10 @@ namespace com.mobius.software.windows.iotbroker.amqp.wrappers
         {
             byte[] value = convertInt(i);
             AMQPType code = value.Length > 1 ? AMQPType.INT : AMQPType.SMALL_INT;
+
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(value);
+
             return new TLVFixed(code, value);
         }
 
@@ -153,6 +160,10 @@ namespace com.mobius.software.windows.iotbroker.amqp.wrappers
                 code = AMQPType.SMALL_ULONG;
             else
                 code = AMQPType.ULONG;
+
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(value);
+
             return new TLVFixed(code, value);
         }
 
@@ -160,6 +171,10 @@ namespace com.mobius.software.windows.iotbroker.amqp.wrappers
         {
             byte[] value = convertLong(l);
             AMQPType code = value.Length > 1 ? AMQPType.LONG : AMQPType.SMALL_LONG;
+
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(value);
+
             return new TLVFixed(code, value);
         }
 

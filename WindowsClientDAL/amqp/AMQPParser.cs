@@ -112,7 +112,6 @@ namespace com.mobius.software.windows.iotbroker.amqp
 
         public static IByteBuffer Encode(AMQPHeader header)
         {
-
             IByteBuffer buf = null;
 
             if (header is AMQPProtoHeader) {

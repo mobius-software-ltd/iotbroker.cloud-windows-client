@@ -90,14 +90,14 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
 
             if (this._account.Protocol == iotbroker.dal.Protocols.AMQP_PROTOCOL || this._account.Protocol == iotbroker.dal.Protocols.COAP_PROTOCOL)
             {
-                this.cmbNewTopicQOS.Items.Clear();
-                this.cmbNewTopicQOS.Items.AddRange(new object[] {"QOS0","QOS1"});
-
                 this.cmbQOS.Items.Clear();
+                this.cmbQOS.Items.AddRange(new object[] {"QOS0","QOS1"});
+
+                this.cmbNewTopicQOS.Items.Clear();
                 if (this._account.Protocol == iotbroker.dal.Protocols.AMQP_PROTOCOL)
-                    this.cmbQOS.Items.AddRange(new object[] {"QOS0"});  
+                    this.cmbNewTopicQOS.Items.AddRange(new object[] {"QOS1"});  
                 else
-                    this.cmbQOS.Items.AddRange(new object[] { "QOS0", "QOS1" });
+                    this.cmbNewTopicQOS.Items.AddRange(new object[] { "QOS0", "QOS1" });
             }                
             else
             {
