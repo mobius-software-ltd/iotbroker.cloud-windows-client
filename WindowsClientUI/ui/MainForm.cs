@@ -72,14 +72,9 @@ namespace com.mobius.software.windows.iotbroker.ui.win7.ui
             this._client.SetListener(this);
             UserClosing = true;
 
-            if (this._account.Protocol == iotbroker.dal.Protocols.AMQP_PROTOCOL)
+            if (this._account.Protocol == iotbroker.dal.Protocols.AMQP_PROTOCOL || this._account.Protocol == iotbroker.dal.Protocols.COAP_PROTOCOL)
             {
                 pnlDuplicate.Hide();
-                pnlRetain.Hide();
-            }
-            else if (this._account.Protocol == iotbroker.dal.Protocols.COAP_PROTOCOL)
-            {
-                pnlDuplicate.Show();
                 pnlRetain.Hide();
             }
             else
