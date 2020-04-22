@@ -272,6 +272,7 @@ namespace com.mobius.software.windows.iotbroker.network.dtls
             MemoryStream buf = new MemoryStream();
             clientState.KeyExchange.GenerateClientKeyExchange(buf);
             byte[] clientKeyExchange = buf.GetBuffer();
+            Array.Resize(ref clientKeyExchange, clientKeyExchange[0] + 1);
             IByteBuffer keyExchangeOutput = Unpooled.Buffer(DtlsHelper.HANDSHAKE_MESSAGE_HEADER_LENGTH + clientKeyExchange.Length);
             short currSequence = sequence++;
             DtlsHelper.WriteHandshakeHeader(currSequence,MessageType.CLIENT_KEY_EXCHANGE,keyExchangeOutput,clientKeyExchange.Length);
